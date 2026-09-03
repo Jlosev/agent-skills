@@ -13,30 +13,23 @@ Repo: https://github.com/Jlosev/agent-skills
 
 ## Install
 
-```bash
-git clone git@github.com:Jlosev/agent-skills.git ~/src/agent-skills
-cd ~/src/agent-skills
-chmod +x install.sh
-./install.sh --user
-```
+No custom installer. Use [`npx skills`](https://github.com/vercel-labs/skills) or ask an agent to run the same commands.
 
-- Owned skills are **copied** into `~/.agents/skills`.
-- Community skills come from `skills-lock.json` via `npx skills add … -g`. They are not vendored in this repo.
-- `install.sh` **skips** a destination that is already a symlink (will not clobber an existing vault link).
-
-Update later:
+After the repo is public:
 
 ```bash
-git pull && ./install.sh --user
+npx skills add Jlosev/agent-skills -g -y
+npx skills update
 ```
 
-Community-only restore from another machine (same lock):
+While it is private (GitHub access required):
 
 ```bash
-npx skills experimental_install   # project scope, run from this repo
-# or
-./install.sh --user               # global add from the lock
+git clone git@github.com:Jlosev/agent-skills.git
+npx skills add ./agent-skills -g -y
 ```
+
+Community skills are not vendored. Restore from `skills-lock.json` (project scope) or add the sources below with `npx skills add <owner/repo> -s <name>`.
 
 `gstack` is not in the lock. If you want it: `git clone https://github.com/garrytan/gstack.git ~/gstack`.
 
