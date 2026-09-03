@@ -1,8 +1,3 @@
----
-created: 2026-09-03
-updated: 2026-09-03
----
-
 # agent-skills
 
 Personal portable agent skills + a curated community lockfile.
