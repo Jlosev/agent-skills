@@ -1,0 +1,204 @@
+/**
+ * Neutral light theme for canvas-to-html export.
+ * Derived from cursor/canvas canvasPaletteLight (~/.cursor/skills-cursor/canvas/sdk/canvas-tokens.d.ts).
+ * No Cursor runtime required.
+ */
+:root {
+  /* Text */
+  --text-primary: #141414f0;
+  --text-secondary: #141414bd;
+  --text-tertiary: #1414148a;
+  --text-quaternary: #1414145c;
+  --text-link: #3685bf;
+  --text-on-accent: #fcfcfc;
+
+  /* Surfaces */
+  --bg-editor: #fcfcfc;
+  --bg-chrome: #f8f8f8;
+  --bg-elevated: #fcfcfc;
+
+  /* Fills */
+  --fill-primary: #14141433;
+  --fill-secondary: #14141424;
+  --fill-tertiary: #14141414;
+  --fill-quaternary: #1414140f;
+
+  /* Strokes */
+  --stroke-primary: #14141433;
+  --stroke-secondary: #1414141f;
+  --stroke-tertiary: #14141414;
+
+  /* Accent */
+  --accent-primary: #3685bf;
+  --accent-control: #3685bf;
+
+  /* Chart / stat tones */
+  --tone-success: #1f8a65;
+  --tone-danger: #cf2d56;
+  --tone-warning: #b87500;
+  --tone-info: #3685bf;
+  --tone-neutral: #1414148a;
+
+  /* Typography */
+  --font-h1-size: 24px;
+  --font-h1-line: 30px;
+  --font-h2-size: 18px;
+  --font-h2-line: 24px;
+  --font-h3-size: 16px;
+  --font-h3-line: 22px;
+  --font-body-size: 14px;
+  --font-body-line: 20px;
+  --font-small-size: 12px;
+  --font-small-line: 16px;
+
+  /* Spacing scale (px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: var(--space-6);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: var(--font-body-size);
+  line-height: var(--font-body-line);
+  color: var(--text-primary);
+  background: var(--bg-editor);
+}
+
+/* Layout primitives */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--stack-gap, var(--space-4));
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  gap: var(--row-gap, var(--space-2));
+  align-items: var(--row-align, stretch);
+}
+
+.grid {
+  display: grid;
+  gap: var(--grid-gap, var(--space-4));
+}
+
+.spacer {
+  flex: 1;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--stroke-tertiary);
+  margin: var(--space-2) 0;
+}
+
+/* Card */
+.card {
+  border: 1px solid var(--stroke-secondary);
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-small-size);
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--stroke-tertiary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-body {
+  padding: var(--space-4);
+}
+
+/* Stat */
+.stat-value {
+  font-size: var(--font-h2-size);
+  font-weight: 590;
+  line-height: var(--font-h2-line);
+}
+
+.stat-label {
+  font-size: var(--font-small-size);
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+}
+
+.stat--success .stat-value { color: var(--tone-success); }
+.stat--danger .stat-value { color: var(--tone-danger); }
+.stat--warning .stat-value { color: var(--tone-warning); }
+.stat--info .stat-value { color: var(--tone-info); }
+
+/* Table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-body-size);
+}
+
+.table.framed {
+  border: 1px solid var(--stroke-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.table th,
+.table td {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  border-bottom: 1px solid var(--stroke-tertiary);
+}
+
+.table th {
+  color: var(--text-secondary);
+  font-weight: 590;
+}
+
+.table.striped tbody tr:nth-child(even) {
+  background: var(--fill-quaternary);
+}
+
+/* Usage bar */
+.usage-bar {
+  display: flex;
+  height: 8px;
+  border-radius: var(--radius-full, 9999px);
+  overflow: hidden;
+  background: var(--fill-tertiary);
+}
+
+.usage-bar-segment {
+  height: 100%;
+}
+
+/* Charts */
+.chart {
+  max-width: 100%;
+  height: auto;
+}
+
+.chart text {
+  fill: var(--text-secondary);
+  font-size: var(--font-small-size);
+}

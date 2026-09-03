@@ -1,0 +1,8 @@
+.agents/
+.claude/
+.cursor/
+node_modules/
+.DS_Store
+.tmp/
+*.pyc
+__pycache__/

@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "skills": {
+    "agent-browser": {
+      "source": "eyadsibai/ltk",
+      "sourceUrl": "https://github.com/eyadsibai/ltk.git",
+      "sourceType": "github",
+      "skillPath": "plugins/ltk-devops/skills/agent-browser/SKILL.md",
+      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "defuddle": {
+      "source": "kepano/obsidian-skills",
+      "sourceUrl": "https://github.com/kepano/obsidian-skills.git",
+      "sourceType": "github",
+      "skillPath": "skills/defuddle/SKILL.md",
+      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceUrl": "https://github.com/vercel-labs/skills.git",
+      "sourceType": "github",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "json-canvas": {
+      "source": "kepano/obsidian-skills",
+      "sourceUrl": "https://github.com/kepano/obsidian-skills.git",
+      "sourceType": "github",
+      "skillPath": "skills/json-canvas/SKILL.md",
+      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "obsidian-bases": {
+      "source": "kepano/obsidian-skills",
+      "sourceUrl": "https://github.com/kepano/obsidian-skills.git",
+      "sourceType": "github",
+      "skillPath": "skills/obsidian-bases/SKILL.md",
+      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "obsidian-cli": {
+      "source": "kepano/obsidian-skills",
+      "sourceUrl": "https://github.com/kepano/obsidian-skills.git",
+      "sourceType": "github",
+      "skillPath": "skills/obsidian-cli/SKILL.md",
+      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "obsidian-markdown": {
+      "source": "kepano/obsidian-skills",
+      "sourceUrl": "https://github.com/kepano/obsidian-skills.git",
+      "sourceType": "github",
+      "skillPath": "skills/obsidian-markdown/SKILL.md",
+      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "using-superpowers": {
+      "source": "obra/superpowers",
+      "sourceUrl": "https://github.com/obra/superpowers.git",
+      "sourceType": "github",
+      "skillPath": "skills/using-superpowers/SKILL.md",
+      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  }
+}
