@@ -11,7 +11,6 @@ usage() {
 Usage: ./install.sh [--user|--project] [--no-community]
 
   --user         copy owned skills to ~/.agents/skills (default)
-                 agent-retro also copied to ~/.cursor/skills/agent-retro
   --project      copy owned skills to ./.agents/skills of the current directory
   --no-community skip npx skills add for skills-lock.json
 EOF
@@ -43,18 +42,12 @@ copy_skill() {
 
 if [[ "$SCOPE" == "user" ]]; then
   DEST="${HOME}/.agents/skills"
-  copy_skill human-doc-voice "$DEST"
-  copy_skill critic "$DEST"
-  copy_skill canvas-to-html "$DEST"
-  copy_skill tool-market-scout "$DEST"
-  copy_skill prompt-engineer "$DEST"
-  copy_skill agent-retro "${HOME}/.cursor/skills"
 else
   DEST="$(pwd)/.agents/skills"
-  for name in human-doc-voice critic canvas-to-html tool-market-scout prompt-engineer agent-retro; do
-    copy_skill "$name" "$DEST"
-  done
 fi
+for name in human-doc-voice critic canvas-to-html tool-market-scout prompt-engineer; do
+  copy_skill "$name" "$DEST"
+done
 
 if [[ "$INSTALL_COMMUNITY" -eq 1 && -f "$ROOT/skills-lock.json" ]]; then
   if ! command -v npx >/dev/null 2>&1; then

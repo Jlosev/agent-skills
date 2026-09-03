@@ -20,7 +20,7 @@ chmod +x install.sh
 ./install.sh --user
 ```
 
-- Owned skills are **copied** into `~/.agents/skills` (`agent-retro` → `~/.cursor/skills`).
+- Owned skills are **copied** into `~/.agents/skills`.
 - Community skills come from `skills-lock.json` via `npx skills add … -g`. They are not vendored in this repo.
 - `install.sh` **skips** a destination that is already a symlink (will not clobber an existing vault link).
 
@@ -49,7 +49,6 @@ npx skills experimental_install   # project scope, run from this repo
 | `canvas-to-html` | Export a Cursor Canvas to static HTML |
 | `tool-market-scout` | JTBD-first Buy / Build / Hybrid / Defer |
 | `prompt-engineer` | Lint SKILL.md / agent / CLAUDE.md / protocol |
-| `agent-retro` | Session-efficiency retro from gryph logs |
 
 ## Community lock
 
@@ -77,8 +76,6 @@ Still in the repo (intentional, not secrets):
 - Copyright name on the MIT license
 - GitHub handle `Jlosev` in skill `metadata.author`
 - Attribution comments for upstream (`LpcPaul/tool-scout-skill`, Dreamineering)
-- Generic product words (Canvas, Obsidian, Gryph, Confluence-the-product as an anti-trigger)
-
-`agent-retro` needs [gryph](https://github.com) on the machine and writes under `~/Library/Application Support/gryph/`. That is local telemetry, not something this repo uploads.
+- Generic product words (Canvas, Obsidian, Confluence-the-product as an anti-trigger)
 
 If a scan still finds a company or personal path, do not flip the repo to public – open an issue and strip first.
