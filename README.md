@@ -5,26 +5,24 @@ updated: 2026-09-04
 
 # agent-skills
 
-Personal portable agent skills. Full bill of materials in `skills-lock.json`.
+Personal portable agent skills. Community pins live in `skills-lock.json`.
 
 ## Install
 
-**My skills only**
+**My skills**
 
 ```bash
 npx skills add Jlosev/agent-skills -g -y
 ```
 
-**Full environment**
+**Community I use**
 
 ```bash
-npx skills add Jlosev/agent-skills -g -y && \
-npx skills add kepano/obsidian-skills -g -y -s defuddle json-canvas obsidian-bases obsidian-cli obsidian-markdown && \
-npx skills add obra/superpowers -g -y -s using-superpowers && \
-npx skills add vercel-labs/skills -g -y -s find-skills && \
-npx skills add LpcPaul/tool-scout-skill -g -y -s tool-scout --full-depth && \
-git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack && \
-cd ~/.claude/skills/gstack && ./setup
+npx skills add kepano/obsidian-skills -g -y
+npx skills add obra/superpowers -g -y
+npx skills add vercel-labs/skills -g -y -s find-skills
+npx skills add LpcPaul/tool-scout-skill -g -y --full-depth
+git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack && cd ~/.claude/skills/gstack && ./setup
 ```
 
 ## Owned skills
