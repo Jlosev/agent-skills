@@ -1,11 +1,6 @@
----
-created: 2026-09-04
-updated: 2026-09-04
----
-
 # agent-skills
 
-Personal portable agent skills. Community pins live in `skills-lock.json`.
+Personal portable agent skills.
 
 ## Install
 
