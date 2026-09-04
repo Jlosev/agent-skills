@@ -1,24 +1,37 @@
 ---
+name: prompt-engineer
+description: >
+  Lint and review agent instruction files (SKILL.md, agent.md, CLAUDE.md, protocol) for executability.
+  Triggers prompt-engineer, lint skill, review SKILL.md, Publication DoD, quality checklist, agent instructions review.
+  Checks triggers, progressive disclosure, Hard Stop, DoD, deterministic script offload per quality-guide.
+  Not for scaffolding a new skill from scratch, chat-prompt optimization, or model-specific prompt research.
+metadata:
+  scope: public
+  author: Jlosev
+  version: "1.2.0"
+  tags: "skill-dev,prompt-engineering,lint"
 created: 2026-09-03
-updated: 2026-09-03
+updated: 2026-09-04
+user-invocable: true
+---
 
 # Prompt Engineer
 
-Lint / review / optimize system prompts. Criteria live **only** in `references/quality-guide.md` (do not duplicate them here).
+Lint/review agent instruction files. Criteria live **only** in `references/quality-guide.md` (do not duplicate them here).
 
 `{SKILL_DIR}` = directory of this SKILL.md.
 
 ## Scope
 
 In: SKILL.md, agent `.md`, CLAUDE.md, protocol  
-Out: runtime debug, strategy, scaffold from scratch  
+Out: runtime debug, strategy, scaffold from scratch, chat-prompt optimization, model-specific prompt research  
 Fallback: generic checklist + ask the type
 
 ## Preconditions
 
 - [ ] Target file path from `$ARGUMENTS`.
 - [ ] `references/quality-guide.md` read.
-- [ ] If called from a factory orchestrator – only after that orchestrator’s validation checkpoint.
+- [ ] If called from a multi-skill factory pipeline – only after the orchestrator’s validation checkpoint.
 
 ## Algorithm
 
@@ -40,13 +53,17 @@ Path from `$ARGUMENTS` or ask.
 2. Read the target file.
 3. For each criterion: check → severity (critical/major/minor) + a concrete fix (`→`).
 4. **Determinism:** rigid CLI sequences → suggest moving them to `scripts/`.
-5. **Eight quality criteria** (SKILL.md only): clarity, structure, self_containment, safety, preconditions, agent_agnostic, examples, self_improvement – table ✅/❌ + fix.
+5. **Quality criteria** (SKILL.md only): clarity, structure, self_containment, safety, preconditions, agent_agnostic, examples, self_improvement – table ✅/❌ + fix.
 
 Metrics script:
 
 ```bash
 "{SKILL_DIR}/scripts/lint_metrics.sh" <file>
 ```
+
+Description metrics: character length, `:` check, trigger phrases, negative triggers – per DoD §Discovery.
+
+Also: compression, anti-patterns table, token estimate (words×1.3), extraction (conditional ≥30 lines → `references/`).
 
 ### Step 3: Report
 
@@ -73,7 +90,7 @@ A=0 critical ≤1 major | B=0 critical ≤3 major | C=1+ critical
 
 ### Step 4: Apply
 
-Ask «Apply? (all / selected / no)». Fixes are exact replacement text.
+Ask «Apply? (all / selected / no)». Fixes are exact replacement text, not «improve wording».
 
 ### Step 5: Post-run
 
@@ -120,8 +137,9 @@ grep -A5 '^description:' <file>   # no ':' in value lines
 ## Gotchas
 
 - A baseline without the guide finds the obvious; value = DoD + quality table + anti-patterns + fix texts
-- `quality_score` from an external evaluator is not replaced by the score band
+- External `quality_score` from an evaluator is not replaced by the score band
 - preconditions ≠ Hard Stop Rules
-- agent_agnostic minor does not block a PR
+- agent_agnostic minor does not block publication
 - description >400 major; `:` critical
 - unconditional steps stay in the body, not in references/
+- Use «Trigger phrases …» instead of «Triggers:» in description (avoid `:`)

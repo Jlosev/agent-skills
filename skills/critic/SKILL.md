@@ -7,10 +7,10 @@ description: >
 metadata:
   scope: public
   author: Jlosev
-  version: "2.0.1"
+  version: "2.0.2"
   tags: "{critic,orchestrator,review,research,planning}"
 created: 2026-07-08
-updated: 2026-09-03
+updated: 2026-09-04
 user-invocable: true
 ---
 
@@ -47,6 +47,8 @@ Fallback: no Task/subagent – Hard Stop, do not proceed to the action
 - For `research-conclusion`: unread source listed in Open Questions + an immediate action with owner/deadline/DoD may be **Accepted residual** in round ≥2.
 - **Breadth vs summary:** a wide research/strategy body is not a finding; Executive Summary / Conclusions / Recommendations must be on-goal to `{ORIGINAL_REQUEST}`.
 - **Anti-water:** on Conciseness findings the orchestrator **cuts/compresses**; suggested fix = what to delete.
+- **Environment facts – orchestrator, not user:** paths, file existence, configs, tool/MCP availability, source URLs – verify via Read/`Glob`/MCP/search before dispatch or while applying findings. Do not ask the user «does X exist?» / «is Y available?». Ask only when `{ORIGINAL_REQUEST}` is lost or a product/policy choice cannot be inferred from the artifact and environment.
+- **Residual QN ≠ grill-me:** after review, user QN is only for residual Important that cannot close via edit or environment check; format Step 3b. No design-tree or interview loop over the whole plan.
 
 ## Algorithm
 
@@ -68,9 +70,12 @@ Fallback: no Task/subagent – Hard Stop, do not proceed to the action
 
 ### Step 2: Dispatch the isolated critic
 
+**Isolated Opus critique only** – no interview prompts, design-tree, or user QN in the subagent prompt. The subagent returns a structured report; user clarifications belong to the orchestrator (Step 3b).
+
 1. Read `{SKILL_DIR}/agents/critic.md` – take `model` from frontmatter (canon – `claude-opus-5-thinking-high`).
-2. Fill `{SKILL_DIR}/references/critic-dispatch-template.md`.
-3. Call **only** via `Task`:
+2. Before dispatch: gather environment facts needed for critique (files, tools, URLs) yourself – do not ask the user.
+3. Fill `{SKILL_DIR}/references/critic-dispatch-template.md`.
+4. Call **only** via `Task`:
 
 ```json
 {
@@ -83,15 +88,26 @@ Fallback: no Task/subagent – Hard Stop, do not proceed to the action
 }
 ```
 
-4. **Hard Stop** – do not go to execution until Task returned a structured report.
+5. **Hard Stop** – do not go to execution until Task returned a structured report.
 
 ### Step 3: Apply criticism
 
+**Apply findings only** – no grill-me / design-tree interview over the whole plan. Isolated critique from Step 2 stays unchanged.
+
 1. Sort Critical → Important → Minor.
-2. For each Critical/Important – edit the artifact or return a revised block for ephemeral/cursor-plan.
-3. If Critical remain – repeat Step 2 (rounds ≤ 3).
-4. On Verdict **PASS** with residual Important (≤2 per gate) – apply them **in the same turn** before finalizing the Review Log.
-5. Add / update `## Artifact Review Log` (in the file) or a chat summary (ephemeral).
+2. Findings about environment assumptions (file, tool, URL) – **verify yourself first** (Read/MCP/search); close via edit or by dropping the finding, do not bounce to the user as «please confirm».
+3. For each Critical/Important – edit the artifact or return a revised block for ephemeral/cursor-plan.
+4. If Critical remain – repeat Step 2 (rounds ≤ 3).
+5. Residual Important that cannot close via edit or environment check – **Step 3b** (QN + WAIT). Others – apply **in the same turn** before finalizing the Review Log.
+6. Add / update `## Artifact Review Log` (in the file) or a chat summary (ephemeral).
+
+### Step 3b: Residual Important → QN (not interview)
+
+1. Only for Important that block handoff and need a **user decision** (trade-off, scope, policy) – not environment facts.
+2. Build a numbered list **QN1, QN2, …** – each tied to a finding; each line includes **Recommended:** with brief rationale.
+3. **WAIT** – no handoff, no new critic round until the user answers or explicitly acks Recommended.
+4. **Not grill-me:** no design-tree, no whole-plan survey, no open-ended «just in case» questions. QN is the minimal gate for residual Important (≤2 on PASS).
+5. Answer → edit artifact → Review Log → Step 4.
 
 ### Step 4: Handoff gate
 
@@ -110,6 +126,8 @@ Fallback: no Task/subagent – Hard Stop, do not proceed to the action
 - **>3 rounds with repeating Critical** – stop, escalate.
 - **Empty or truncated `{ARTIFACT_CONTENT}`** – stop; snapshot Plan Mode first.
 - **`model`** – only from the agent frontmatter (`claude-opus-5-thinking-high`).
+- **No environment QN to the user** – fs/tools/URLs are gathered by the orchestrator; QN only via Step 3b (residual policy/trade-off) with WAIT.
+- **No grill-me / design-tree in Step 2–3** – subagent does not run interviews; orchestrator does not survey the whole plan.
 
 ## Definition of Done
 
@@ -117,7 +135,8 @@ Fallback: no Task/subagent – Hard Stop, do not proceed to the action
 - [ ] Consent received (phrase or yes)
 - [ ] Critic called via `Task` on Opus 5, not inline
 - [ ] Structured report received
-- [ ] All Critical/Important handled (fixed or explicitly accepted)
+- [ ] All Critical/Important handled (fixed, verified via environment, or closed via QN + user answer)
+- [ ] Residual Important needing user decision formatted as QN + Recommended; handoff only after answer or explicit ack
 - [ ] Review Log in the file or chat summary
 - [ ] Verdict PASS (or REVISE handled)
 - [ ] User sees a summary before execution handoff

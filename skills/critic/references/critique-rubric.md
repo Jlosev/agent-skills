@@ -1,6 +1,6 @@
 ---
 created: 2026-07-08
-updated: 2026-08-20
+updated: 2026-09-04
 metadata:
   scope: public
   author: Jlosev
@@ -80,7 +80,9 @@ metadata:
 | 3 | Мелкие ошибки в деталях |
 | 5 | Зависимости и assumptions корректны |
 
-**Red flags:** шаг B до A при hard dependency, неверные пути/инструменты vault, игнор Hard Stop rules проекта, несовместимость с AGENTS.md constraints.
+**Red flags:** step B before A with a hard dependency, wrong paths/tools, ignored Hard Stop rules, incompatibility with project constraints.
+
+**Environment assumptions (orchestrator, not user):** finding «file/tool may be missing» – suggested fix = verify via Read/MCP; severity only if the artifact asserts something false. Do not suggest «ask the user» about fs/tools/URLs.
 
 ---
 

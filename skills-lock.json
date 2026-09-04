@@ -56,6 +56,13 @@
       "sourceType": "github",
       "skillPath": "skills/using-superpowers/SKILL.md",
       "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "tool-scout": {
+      "source": "lpcpaul/tool-scout-skill",
+      "sourceUrl": "https://github.com/LpcPaul/tool-scout-skill.git",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/tool-scout/SKILL.md",
+      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
     }
   }
 }

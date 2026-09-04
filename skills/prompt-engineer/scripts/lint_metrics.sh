@@ -7,10 +7,10 @@ echo "=== lint_metrics: $FILE ==="
 echo "lines: $(wc -l < "$FILE" | tr -d ' ')"
 echo "must_count: $(grep -ciE 'IMPORTANT|YOU MUST|\bMUST\b' "$FILE" 2>/dev/null || true)"
 echo "sections:"
-grep -E '^## (Hard Stop Rules|Definition of Done|Команды проверки|Scope|Gotchas|Алгоритм|Пример|Preconditions|Предусловия)' "$FILE" || true
+grep -E '^## (Hard Stop Rules|Definition of Done|Команды проверки|Check commands|Scope|Gotchas|Алгоритм|Algorithm|Пример|Example|Examples|Preconditions|Предусловия)' "$FILE" || true
 echo "agent_specific: $(grep -ciE 'Claude Code|Codex only|Cursor only|/skill-creator' "$FILE" 2>/dev/null || true)"
 echo "skill_deps: $(grep -ciE 'сначала (вызови|запусти|используй).*(skill|/skill-)' "$FILE" 2>/dev/null || true)"
-echo "has_example_section: $(grep -cE '^## Пример|^## Examples' "$FILE" 2>/dev/null || true)"
+echo "has_example_section: $(grep -cE '^## Пример|^## Example|^## Examples' "$FILE" 2>/dev/null || true)"
 echo "has_preconditions: $(grep -cE '^## Preconditions|^## Предусловия' "$FILE" 2>/dev/null || true)"
 python3 - "$FILE" <<'PY'
 import re, sys

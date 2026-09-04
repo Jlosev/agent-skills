@@ -1,12 +1,12 @@
 ---
 created: 2026-09-03
-updated: 2026-09-03
+updated: 2026-09-04
 ---
 
 # System Prompt Quality Guide
 
 Стандарт для SKILL.md, agent .md, CLAUDE.md, protocols.
-Rules for Rules + Anthropic skill-creator + a publication DoD
+Rules for Rules + Anthropic skill-creator + publication DoD
 + eight LLM quality criteria (clarity, structure, self_containment, safety, preconditions, agent_agnostic, examples, self_improvement).
 
 ---
@@ -56,7 +56,7 @@ Gate перед публикацией скилла. Severity: critical = бло
 
 | Критерий | Sev | Check |
 |----------|-----|-------|
-| **нет `:` в `description`** | critical | pre-commit gate |
+| **нет `:` в `description`** | critical | publication lint gate |
 | description ≤400 (hard ≤1024) | major/critical | >400 major, >1024 critical |
 | when-to-invoke, не capabilities | major | |
 | ≥3 trigger phrases | major | без метки «Триггеры:» |

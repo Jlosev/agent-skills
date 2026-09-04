@@ -1,42 +1,37 @@
 ---
-created: 2026-09-03
-updated: 2026-09-03
+created: 2026-09-04
+updated: 2026-09-04
 ---
 
 # Search Sources
 
+Scan execution – **tool-scout** (`python3 scripts/tool_scout.py`). This file – query rules only.
+
 ## Query families
 
-На каждый functional job – 2–3 семейства:
+Per functional job – 1–2 capability-first queries for `tool_scout.py`:
 
 ```text
 {capability} open source
-{capability} {platform} app
+{capability} {platform}
 {capability} self-hosted
-best {capability} tool 2025 2026   ← только supplementary
 ```
 
 **Primary:** capability + platform + license intent  
-**Secondary:** brand name (для cross-check, не для discovery)  
-**Tertiary:** `{brand} alternatives` – только после JTBD brief, max 1 query
+**Supplementary (max 1, after JTBD brief):** `{brand} alternatives` or `{brand} vs`  
+**Forbidden as primary:** `alternatives to {brand}`, `{brand} replacement`
 
-## Source routing by tool type
+## Feed into tool-scout
 
-| Tool type | Primary sources | Secondary |
-|-----------|-----------------|-----------|
-| Dev / CLI / lib | GitHub, npm, PyPI, awesome-lists | Hacker News, Reddit r/selfhosted |
-| Agent / MCP / skill | skills.sh, GitHub | MCP directories |
-| Desktop / mobile app | App Store, Play Store, Setapp, vendor sites | Product Hunt, G2 |
-| SaaS / B2B | Vendor site, G2, Gartner (if public) | OSS self-hosted analog |
-| Infra / data platform | CNCF, DB-Engines, vendor docs | company wiki (only if user said it is in scope) |
+```bash
+python3 "$TOOL_SCOUT_DIR/scripts/tool_scout.py" "{capability query}" --json --limit 10
+```
 
-## Parallel scan checklist
+Optional source filter:
 
-- [ ] WebSearch – ≥3 capability queries
-- [ ] GitHub – search + check awesome-list repos
-- [ ] Paid – at least 2 SaaS/desktop candidates if user allows paid
-- [ ] OSS – at least 2 if OSS preferred or allowed
-- [ ] Native – OS built-in (e.g. macOS Dictation, Windows Speech)
+```bash
+python3 "$TOOL_SCOUT_DIR/scripts/tool_scout.py" "{query}" --sources github,npm,vscode,mcp,web --json
+```
 
 ## Normalization schema
 
@@ -52,7 +47,7 @@ notes: one line
 
 ## Red flags (exclude or downgrade)
 
-- No pricing for paid product after search
-- AGPL without legal note when user said «commercial»
+- No pricing for paid product after scan
+- AGPL without note when user said commercial
 - Last release >18 months for security-sensitive category
-- Requires account + cloud when user said offline/local
+- Requires cloud when user said offline/local

@@ -9,10 +9,10 @@ description: >
 metadata:
   scope: public
   author: Jlosev
-  version: "1.5.1"
-  tags: "human-doc,publish,readability,dedup"
+  version: "1.6.0"
+  tags: "human-doc,publish,readability,dedup,detect-only"
 created: 2026-07-28
-updated: 2026-09-03
+updated: 2026-09-04
 user-invocable: true
 argument-hint: "[path.md | path.canvas.tsx]"
 allowed-tools: Read, Edit, Write, Bash, AskUserQuestion
@@ -46,12 +46,15 @@ Make an outbound document read like a human PM wrote it: formal report tone, no 
 
 ### 0. Mode (CRITICAL)
 
-**Goal – find and fix** where the language fails the contract.  
-**Not the goal – rewrite everything.** If a fragment is already fine (e.g. «Главный вывод»), leave it.
+**Detect-only – default first pass.** Flags only, **no Edit/Write** on the target file. Edits only after explicit «ok» / «fix» / «apply» from the user.
+
+**Apply – second pass.** After «ok»: targeted contract fixes + dedup. Not the goal – rewrite everything. If a fragment is already fine (e.g. «Main takeaway»), leave it.
 
 After targeted edits from user comments – **run the whole document** for the same error pattern (not only the highlighted fragment).
 
 Antipattern: «must rewrite every Caption/Callout» → excess, ruins good text.
+
+**Upstream, not imported:** em-dash ban, «kill all adverbs», reader-in-the-room / direct «you» / personality from humanizer and stop-slop. Register – formal leadership report; en dash «–» per project typography – OK.
 
 ### 1. Tone: formal report, not personal chat
 
@@ -160,17 +163,40 @@ Walk user-facing strings (H1/H2, Caption, Callout, table headers, footer).
 
 Do not touch: numbers, imports, logic, `cursor/canvas`.
 
-## Algorithm
+## Detect-only (CRITICAL)
 
-1. Path from `$ARGUMENTS` or ask. If the user wants an «unclear» document rewritten – first structure it for the reader's question, then voice. Do not polish assembly kitchen.
-2. Baseline – `cp "<path>" ".tmp/human-doc-$(basename "<path>")"`.
-3. Checklist + repeat scan – `{SKILL_DIR}/scripts/check.sh "<path>"` (again only after user-comment edits and in DoD, not after every Edit).
-4. **Dedup pass** (§6): read as a reader – for a patch, together with the live page.
-5. Language audit → targeted contract edits (not a blanket rewrite).
-6. If edits came from user comments – **full pass** of the document for the same pattern.
-7. Show **what changed**: removed dups as «dup / before / after»; other edits as before→after only. State that meaning is intact.  
-   **HARD STOP:** language accepted only after «ok» / «согласовано».
-8. External publish (wiki / CMS) – only after an explicit «publish».
+**Invoke:**
+
+| How | Behavior |
+| --- | --- |
+| `/human-doc-voice <path>` | Phase A (detect-only) by default |
+| `/human-doc-voice --detect-only <path>` | Explicit flags only; wait for «ok» |
+| `/human-doc-voice --apply <path>` | Skip phase A; apply immediately (flags already reviewed) |
+| «ok» / «fix» / «apply» after flags | Move to phase B on the same path |
+
+**Phase A – detect-only (no file edits):**
+
+1. Path from `$ARGUMENTS` (strip `--detect-only` / `--apply`) or ask.
+2. `{SKILL_DIR}/scripts/check.sh`, `tics.py`, `repeats.py` on path.
+3. Read path; cross-check `references/ai-writing-tells-checklist.md` and `references/structural-tells.md`.
+4. Return flag table: `location | tell | excerpt | fix direction`. Group by severity (SKILL contract > upstream tells).
+5. **STOP.** No Edit/Write, no baseline copy. Ask: «apply fixes?»
+
+**Phase B – apply (only after «ok»):**
+
+1. Baseline – `cp "<path>" ".tmp/human-doc-$(basename "<path>")"`.
+2. Dedup (§6) → language audit → targeted edits (not blanket rewrite).
+3. If edits from user comments – full pass for the same pattern.
+4. `check.sh` again (DoD).
+5. Show changes: dups «dup / before / after»; other edits before→after only; meaning intact.  
+   **HARD STOP:** apply accepted only after second «ok» / «approved» on the diff.
+6. External publish – only after explicit «publish».
+
+## Algorithm (short)
+
+1. Path → **phase A detect-only** (above).
+2. After «ok» → **phase B apply**.
+3. `--apply` in `$ARGUMENTS` → phase B immediately (exception: user already saw flags this session).
 
 ## Hard Stop Rules
 
@@ -179,13 +205,27 @@ Do not touch: numbers, imports, logic, `cursor/canvas`.
 - Do not copy this SKILL contract into `.mdc` / other files.
 - Do not publish externally without user confirm.
 - Do not blanket-rewrite «just in case».
+- **Detect-only:** do not edit the file until «ok» on flags; `--apply` – only if user already saw detect-only this session.
 - If the skill was called because of **new** sections: fix your own text. `check.sh` flags on lines outside the diff – show the user, do not silent-edit.
 - Do not slide a formal report into a personal/chat tone.
 - Do not leave a disclaimer the reader cannot understand on the first read.
 - Dedup ≠ deleting the fact: it must remain in exactly one place, not zero.
 - `check.sh` – once on baseline (step 3) and once in DoD. Not after every Edit.
 
+## References (detect-only)
+
+| File | Purpose |
+| --- | --- |
+| `references/ai-writing-tells-checklist.md` | Compact Wikipedia / humanizer checklist – content, language, chatbot |
+| `references/structural-tells.md` | stop-slop structures: not-X-but-Y, rule-of-three, metronomic rhythm |
+
+Do not fold these into a formal PM report register – checklists live here only.
+
 ## Definition of Done
+
+**Detect-only:** flag table delivered; file untouched; waiting for «ok».
+
+**Apply:**
 
 - [ ] `check.sh` ran; heuristic agent-meta / slop / chatty / kitchen markers clean or left on purpose
 - [ ] Dedup: each fact explained in one place

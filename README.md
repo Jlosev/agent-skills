@@ -1,3 +1,4 @@
+
 # agent-skills
 
 Personal portable agent skills + a curated community lockfile.
@@ -36,7 +37,7 @@ Community skills are not vendored. Restore from `skills-lock.json` (project scop
 | `critic` | Manual adversarial review via an isolated Opus 5 subagent |
 | `canvas-to-html` | Export a Cursor Canvas to static HTML |
 | `tool-market-scout` | JTBD-first Buy / Build / Hybrid / Defer |
-| `prompt-engineer` | Lint SKILL.md / agent / CLAUDE.md / protocol |
+| `prompt-engineer` | Lint/review agent instruction files (SKILL.md, agent, CLAUDE.md, protocol); not scaffold or chat-prompt |
 
 ## Community lock
 
@@ -46,6 +47,7 @@ GitHub-only entries, no company sources:
 - `obra/superpowers` – using-superpowers
 - `eyadsibai/ltk` – agent-browser
 - `vercel-labs/skills` – find-skills (the public CLI finder, not a company hub)
+- `LpcPaul/tool-scout-skill` – tool-scout (community scan for tool-market-scout)
 
 Placeholder `computedHash` values are rewritten the first time `npx skills add` runs.
 
