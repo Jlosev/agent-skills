@@ -5,11 +5,11 @@ updated: 2026-09-04
 
 # Search Sources
 
-Scan execution – **tool-scout** (`python3 scripts/tool_scout.py`). This file – query rules only.
+Scan execution – **tool-scout** skill ([LpcPaul/tool-scout-skill](https://github.com/LpcPaul/tool-scout-skill)). This file – query rules only.
 
 ## Query families
 
-Per functional job – 1–2 capability-first queries for `tool_scout.py`:
+Per functional job – 1–2 capability-first queries for `tool-scout`:
 
 ```text
 {capability} open source
@@ -20,18 +20,6 @@ Per functional job – 1–2 capability-first queries for `tool_scout.py`:
 **Primary:** capability + platform + license intent  
 **Supplementary (max 1, after JTBD brief):** `{brand} alternatives` or `{brand} vs`  
 **Forbidden as primary:** `alternatives to {brand}`, `{brand} replacement`
-
-## Feed into tool-scout
-
-```bash
-python3 "$TOOL_SCOUT_DIR/scripts/tool_scout.py" "{capability query}" --json --limit 10
-```
-
-Optional source filter:
-
-```bash
-python3 "$TOOL_SCOUT_DIR/scripts/tool_scout.py" "{query}" --sources github,npm,vscode,mcp,web --json
-```
 
 ## Normalization schema
 

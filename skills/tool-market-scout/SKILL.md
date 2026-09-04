@@ -45,16 +45,12 @@ Job statement, functional jobs, constraints, out of scope, buy-or-build stake.
 
 ### Step 2: Community scan (tool-scout)
 
-**Do not** run your own WebSearch/multi-source scan. Use the community skill:
-
-```bash
-npx skills add LpcPaul/tool-scout-skill
-python3 "$TOOL_SCOUT_DIR/scripts/tool_scout.py" "CAPABILITY QUERY FROM JTBD" --json --limit 10
-```
+**Do not** run your own WebSearch/multi-source scan. **Invoke / run the installed `tool-scout` skill** with capability queries from the brief.
 
 - Query = capability-first from functional jobs (`references/search-sources.md`)
 - Supplementary `{brand} alternatives` – max 1, after brief only
-- If `tool_scout.py` missing → ask user to install, then minimal capability search (no full scan reimplementation)
+- CLI, flags, and scripts for `tool-scout` live in [LpcPaul/tool-scout-skill](https://github.com/LpcPaul/tool-scout-skill) only; do not duplicate here
+- If `tool-scout` is not installed → ask once: `npx skills add LpcPaul/tool-scout-skill`; then rerun via the skill. Fallback: minimal capability search (no full scan reimplementation)
 
 Normalize to candidate table (name, type, OSS/paid, source URL, covers jobs).
 
