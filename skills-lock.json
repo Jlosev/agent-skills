@@ -1,13 +1,6 @@
 {
   "version": 1,
   "skills": {
-    "agent-browser": {
-      "source": "eyadsibai/ltk",
-      "sourceUrl": "https://github.com/eyadsibai/ltk.git",
-      "sourceType": "github",
-      "skillPath": "plugins/ltk-devops/skills/agent-browser/SKILL.md",
-      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
-    },
     "defuddle": {
       "source": "kepano/obsidian-skills",
       "sourceUrl": "https://github.com/kepano/obsidian-skills.git",

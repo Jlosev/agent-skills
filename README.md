@@ -40,7 +40,6 @@ GitHub-only entries, no company sources:
 
 - `kepano/obsidian-skills` – defuddle, obsidian-markdown, obsidian-bases, obsidian-cli, json-canvas
 - `obra/superpowers` – using-superpowers
-- `eyadsibai/ltk` – agent-browser
 - `vercel-labs/skills` – find-skills (the public CLI finder, not a company hub)
 - `LpcPaul/tool-scout-skill` – tool-scout (community scan for tool-market-scout)
 
