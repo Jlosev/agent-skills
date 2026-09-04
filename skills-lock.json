@@ -57,5 +57,16 @@
       "skillPath": ".claude/skills/tool-scout/SKILL.md",
       "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
     }
+  },
+  "toolkits": {
+    "gstack": {
+      "source": "garrytan/gstack",
+      "sourceUrl": "https://github.com/garrytan/gstack.git",
+      "sourceType": "github",
+      "installKind": "clone-setup",
+      "installCommand": "git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack && cd ~/.claude/skills/gstack && ./setup",
+      "destPath": "~/.claude/skills/gstack",
+      "note": "Full suite via ./setup. npx skills add garrytan/gstack installs the router skill only."
+    }
   }
 }
