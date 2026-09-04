@@ -1,6 +1,20 @@
 {
   "version": 1,
   "skills": {
+    "canvas-to-html": {
+      "source": "Jlosev/agent-skills",
+      "sourceUrl": "https://github.com/Jlosev/agent-skills.git",
+      "sourceType": "github",
+      "skillPath": "skills/canvas-to-html/SKILL.md",
+      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "critic": {
+      "source": "Jlosev/agent-skills",
+      "sourceUrl": "https://github.com/Jlosev/agent-skills.git",
+      "sourceType": "github",
+      "skillPath": "skills/critic/SKILL.md",
+      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
     "defuddle": {
       "source": "kepano/obsidian-skills",
       "sourceUrl": "https://github.com/kepano/obsidian-skills.git",
@@ -13,6 +27,13 @@
       "sourceUrl": "https://github.com/vercel-labs/skills.git",
       "sourceType": "github",
       "skillPath": "skills/find-skills/SKILL.md",
+      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "human-doc-voice": {
+      "source": "Jlosev/agent-skills",
+      "sourceUrl": "https://github.com/Jlosev/agent-skills.git",
+      "sourceType": "github",
+      "skillPath": "skills/human-doc-voice/SKILL.md",
       "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
     },
     "json-canvas": {
@@ -43,11 +64,18 @@
       "skillPath": "skills/obsidian-markdown/SKILL.md",
       "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
     },
-    "using-superpowers": {
-      "source": "obra/superpowers",
-      "sourceUrl": "https://github.com/obra/superpowers.git",
+    "prompt-engineer": {
+      "source": "Jlosev/agent-skills",
+      "sourceUrl": "https://github.com/Jlosev/agent-skills.git",
       "sourceType": "github",
-      "skillPath": "skills/using-superpowers/SKILL.md",
+      "skillPath": "skills/prompt-engineer/SKILL.md",
+      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "tool-market-scout": {
+      "source": "Jlosev/agent-skills",
+      "sourceUrl": "https://github.com/Jlosev/agent-skills.git",
+      "sourceType": "github",
+      "skillPath": "skills/tool-market-scout/SKILL.md",
       "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
     },
     "tool-scout": {
@@ -55,6 +83,13 @@
       "sourceUrl": "https://github.com/LpcPaul/tool-scout-skill.git",
       "sourceType": "github",
       "skillPath": ".claude/skills/tool-scout/SKILL.md",
+      "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "using-superpowers": {
+      "source": "obra/superpowers",
+      "sourceUrl": "https://github.com/obra/superpowers.git",
+      "sourceType": "github",
+      "skillPath": "skills/using-superpowers/SKILL.md",
       "computedHash": "0000000000000000000000000000000000000000000000000000000000000000"
     }
   },

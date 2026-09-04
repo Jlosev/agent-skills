@@ -5,7 +5,7 @@ updated: 2026-09-04
 
 # agent-skills
 
-Personal portable agent skills. Community deps pinned in `skills-lock.json`.
+Personal portable agent skills. Full bill of materials in `skills-lock.json`.
 
 ## Install
 
