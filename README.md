@@ -1,3 +1,8 @@
+---
+created: 2026-09-04
+updated: 2026-09-04
+---
+
 # agent-skills
 
 Personal portable agent skills.
@@ -16,7 +21,8 @@ npx skills add Jlosev/agent-skills -g -y
 npx skills add kepano/obsidian-skills -g -y
 npx skills add obra/superpowers -g -y
 npx skills add vercel-labs/skills -g -y -s find-skills
-npx skills add LpcPaul/tool-scout-skill -g -y --full-depth
+npx skills add LpcPaul/tool-scout-skill -g -y
+npx skills add mattpocock/skills -g -y -s grill-me
 git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack && cd ~/.claude/skills/gstack && ./setup
 ```
 
