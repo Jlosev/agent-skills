@@ -1,9 +1,12 @@
+---
+created: 2026-09-04
+updated: 2026-09-04
+---
+
 
 # agent-skills
 
 Personal portable agent skills + a curated community lockfile.
-
-Private while under review. Make public only after you re-read the share checklist below.
 
 Repo: https://github.com/Jlosev/agent-skills
 
@@ -11,14 +14,12 @@ Repo: https://github.com/Jlosev/agent-skills
 
 No custom installer. Use [`npx skills`](https://github.com/vercel-labs/skills) or ask an agent to run the same commands.
 
-After the repo is public:
-
 ```bash
 npx skills add Jlosev/agent-skills -g -y
 npx skills update
 ```
 
-While it is private (GitHub access required):
+Optional – local clone for development:
 
 ```bash
 git clone git@github.com:Jlosev/agent-skills.git
@@ -51,7 +52,7 @@ GitHub-only entries, no company sources:
 
 Placeholder `computedHash` values are rewritten the first time `npx skills add` runs.
 
-## Share checklist (read before making the repo public)
+## What was stripped before publishing
 
 Stripped on purpose:
 
@@ -68,4 +69,4 @@ Still in the repo (intentional, not secrets):
 - Attribution comments for upstream (`LpcPaul/tool-scout-skill`, Dreamineering)
 - Generic product words (Canvas, Obsidian, Confluence-the-product as an anti-trigger)
 
-If a scan still finds a company or personal path, do not flip the repo to public – open an issue and strip first.
+If a scan finds a company or personal path, open an issue – do not assume it is intentional.
