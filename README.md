@@ -1,12 +1,8 @@
 # agent-skills
 
-Personal portable agent skills + a curated community lockfile.
-
-Repo: https://github.com/Jlosev/agent-skills
+Personal portable agent skills, shared with the community. Includes a curated `skills-lock.json` for third-party skills I use alongside the owned set.
 
 ## Install
-
-No custom installer. Use [`npx skills`](https://github.com/vercel-labs/skills) or ask an agent to run the same commands.
 
 ```bash
 npx skills add Jlosev/agent-skills -g -y
@@ -20,9 +16,7 @@ git clone git@github.com:Jlosev/agent-skills.git
 npx skills add ./agent-skills -g -y
 ```
 
-Community skills are not vendored. Restore from `skills-lock.json` (project scope) or add the sources below with `npx skills add <owner/repo> -s <name>`.
-
-`gstack` is not in the lock. If you want it: `git clone https://github.com/garrytan/gstack.git ~/gstack`.
+Community skills are not vendored here. Restore them from `skills-lock.json`, or add sources manually: `npx skills add <owner/repo> -s <name>`.
 
 ## Owned skills
 
@@ -36,30 +30,15 @@ Community skills are not vendored. Restore from `skills-lock.json` (project scop
 
 ## Community lock
 
-GitHub-only entries, no company sources:
+Pinned in `skills-lock.json`:
 
 - `kepano/obsidian-skills` – defuddle, obsidian-markdown, obsidian-bases, obsidian-cli, json-canvas
 - `obra/superpowers` – using-superpowers
-- `vercel-labs/skills` – find-skills (the public CLI finder, not a company hub)
+- `vercel-labs/skills` – find-skills
 - `LpcPaul/tool-scout-skill` – tool-scout (community scan for tool-market-scout)
 
 Placeholder `computedHash` values are rewritten the first time `npx skills add` runs.
 
-## What was stripped before publishing
+## License
 
-Stripped on purpose:
-
-- Company vault paths, internal wikis, confirm tokens, hub URLs
-- Company logins (author is the GitHub handle)
-- Eval fixtures and local run workspaces
-- Voice profiles, calendar credentials, lockfiles from a company catalog
-- `my-voice`, digest, Confluence/Jira publishers, OKR/TDR, calendar
-
-Still in the repo (intentional, not secrets):
-
-- Copyright name on the MIT license
-- GitHub handle `Jlosev` in skill `metadata.author`
-- Attribution comments for upstream (`LpcPaul/tool-scout-skill`, Dreamineering)
-- Generic product words (Canvas, Obsidian, Confluence-the-product as an anti-trigger)
-
-If a scan finds a company or personal path, open an issue – do not assume it is intentional.
+MIT – see [LICENSE](LICENSE).
