@@ -1,6 +1,9 @@
 ---
+name: tool-market-scout
+description: JTBD brief to community scan to scoring to verdict Buy / Build / Hybrid / Defer. Triggers tool-market-scout, buy vs build, tool market scan. Delegates scan to tool-scout.
 created: 2026-09-03
-updated: 2026-09-04
+updated: 2026-09-05
+---
 
 <!-- Scan: https://github.com/LpcPaul/tool-scout-skill (LpcPaul) -->
 <!-- Verdict rubric: https://mm.dreamineering.com/playbook/applications/select-tech/ (Dreamineering) -->
