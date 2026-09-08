@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "class": {
+      "type": "string",
+      "enum": ["action_me", "fyi", "noise"]
+    },
+    "urgency": {
+      "type": "string",
+      "enum": ["critical", "normal", "low"]
+    },
+    "text": {
+      "type": "string"
+    }
+  },
+  "required": ["class", "urgency", "text"],
+  "additionalProperties": false
+}

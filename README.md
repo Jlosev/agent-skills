@@ -34,6 +34,7 @@ Catalog: [skills.sh/jlosev/agent-skills](https://skills.sh/jlosev/agent-skills).
 | `canvas-to-html` | Export a Cursor Canvas to static HTML |
 | `tool-market-scout` | JTBD-first Buy / Build / Hybrid / Defer |
 | `prompt-engineer` | Lint/review agent instruction files (SKILL.md, agent, CLAUDE.md, protocol); not scaffold or chat-prompt |
+| `local-llm` | Fail-closed structured complete on a local LM Studio model (Shell, not Task) |
 
 ## LICENSE
 
