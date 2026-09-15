@@ -1,3 +1,8 @@
+---
+created: 2026-09-15
+updated: 2026-09-15
+---
+
 # agent-skills
 
 Personal portable agent skills.
@@ -35,6 +40,7 @@ Catalog: [skills.sh/jlosev/agent-skills](https://skills.sh/jlosev/agent-skills).
 | `tool-market-scout` | JTBD-first Buy / Build / Hybrid / Defer |
 | `prompt-engineer` | Lint/review agent instruction files (SKILL.md, agent, CLAUDE.md, protocol); not scaffold or chat-prompt |
 | `local-llm` | Fail-closed structured complete on a local LM Studio model (Shell, not Task) |
+| `pipeline` | Orchestrate brainstorm → plan → review → SDD with on-disk state and resume |
 
 ## LICENSE
 
