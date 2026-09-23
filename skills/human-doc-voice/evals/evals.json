@@ -1,0 +1,97 @@
+{
+  "skill_name": "human-doc-voice",
+  "evals": [
+    {
+      "id": 1,
+      "name": "reglament",
+      "trigger": true,
+      "prompt": "Отредактируй evals/files/reglament.md по human-doc-voice: человек прочитает как регламент, правь сразу.",
+      "expected_output": "Регламент без слопа и дубля; «пробуем» сохранено; без тона отчёта для лидов; правка в файле без ожидания «ок».",
+      "files": ["evals/files/reglament.md"],
+      "expectations": [
+        "edit_applied: выход — отредактированный текст, не только таблица флагов",
+        "no_ok_prompt: нет просьбы «ок», «apply?», «применить правки?»",
+        "modality_preserved: «пробуем» есть, «делаем» как замена модальности — нет",
+        "wrapper_removed: «важно отметить» снято",
+        "fact_preserved: Service Desk и «рабочих дней» в тексте или в «Не вошло»",
+        "register_ok: нет «Главный вывод», «TL;DR», lead-block для лидов",
+        "genre_not_refused: нет отказа из‑за жанра регламента"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "research-note",
+      "trigger": true,
+      "prompt": "Прополишь evals/files/research-note.md для коллеги — research-заметка, не WIP себе.",
+      "expected_output": "Короче, один факт про p95; гипотеза с «пробуем»; без «следует подчеркнуть».",
+      "files": ["evals/files/research-note.md"],
+      "expectations": [
+        "edit_applied",
+        "no_ok_prompt",
+        "modality_preserved",
+        "wrapper_removed: «следует подчеркнуть» снято",
+        "fact_preserved: «12%» и «p95» в тексте или в «Не вошло»",
+        "register_ok: не переписано в формальный статус для руководства",
+        "genre_not_refused"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "task-brief",
+      "trigger": true,
+      "prompt": "Приведи evals/files/task-brief.md в порядок перед постановкой задачи исполнителю.",
+      "expected_output": "Императив/актор назван; дедуп; «пробуем ограничиться» не усилено до «делаем».",
+      "files": ["evals/files/task-brief.md"],
+      "expectations": [
+        "edit_applied",
+        "no_ok_prompt",
+        "modality_preserved",
+        "wrapper_removed: «необходимо осуществить» снято или заменено на действие",
+        "fact_preserved: «01.10» и on-call в тексте или в «Не вошло»",
+        "register_ok",
+        "genre_not_refused"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "short-instruction",
+      "trigger": true,
+      "prompt": "Сделай evals/files/short-instruction.md читаемой короткой инструкцией, правь файл.",
+      "expected_output": "Шаги ясны; «пробуем пропускать lint-warnings» сохранено; без пустой обёртки.",
+      "files": ["evals/files/short-instruction.md"],
+      "expectations": [
+        "edit_applied",
+        "no_ok_prompt",
+        "modality_preserved",
+        "wrapper_removed",
+        "fact_preserved: validate.sh и lint-warnings в тексте или в «Не вошло»",
+        "register_ok: инструкция, не executive summary",
+        "genre_not_refused"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "mm-reply-anti",
+      "trigger": false,
+      "prompt": "Ответь в MM-тред: «– В работе. Сверяем цифры…» — это evals/files/mm-reply.md",
+      "expected_output": "human-doc-voice не вызывается; текст остаётся чатовым.",
+      "files": ["evals/files/mm-reply.md"],
+      "expectations": [
+        "should_not_invoke: скилл не применён к MM-ответу",
+        "scope_chat: в описании/поведении out-of-scope для чата"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "log-scratch-anti",
+      "trigger": false,
+      "prompt": "Допиши agent scratch в log: evals/files/log-scratch.md",
+      "expected_output": "human-doc-voice не трогает agent-notes/log.",
+      "files": ["evals/files/log-scratch.md"],
+      "expectations": [
+        "should_not_invoke",
+        "scope_agent_scratch: log/agent-notes в out-of-scope"
+      ]
+    }
+  ]
+}

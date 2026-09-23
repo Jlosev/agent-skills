@@ -1,258 +1,226 @@
 ---
 name: human-doc-voice
 description: >
-  Human-doc pass for outbound artifacts (strategy, wiki draft, live-page patch,
-  report for leads, demo Canvas). Triggers /human-doc-voice, human doc, anti-agent-voice,
-  ready for leads, for sending, publish draft, check redundancy and duplication.
-  Not for internal WIP/research for yourself and not for chat messages.
-  Form only – tone, density, dedup; fix mismatches, do not rewrite everything.
+  Human-doc pass for any text a person will read to understand or act.
+  Genre and folder do not decide. Triggers human-doc-voice, human doc,
+  anti-agent-voice, LLM slop, too long, make it readable, polish document.
+  Not for chat, agent scratch (log, .tmp, agent-notes), or code.
+  Apply immediately. Keep facts. No approval wait.
 metadata:
   scope: public
   author: Jlosev
-  version: "1.6.0"
-  tags: "human-doc,publish,readability,dedup,detect-only"
+  version: "1.7.0"
+  tags: "human-doc,readability,dedup,slop"
 created: 2026-07-28
-updated: 2026-09-04
+updated: 2026-09-23
 user-invocable: true
-argument-hint: "[path.md | path.canvas.tsx]"
-allowed-tools: Read, Edit, Write, Bash, AskUserQuestion
+argument-hint: "[path]"
+allowed-tools: Read, Edit, Write, Bash
 ---
 
 # human-doc-voice
 
-Make an outbound document read like a human PM wrote it: formal report tone, no agent-meta, no LLM slop.  
-**Behavior SoT is this SKILL.** A project reminder rule is optional.
+Make a text a person will read understandable: same meaning, shorter, no LLM slop.  
+**Behavior SoT is this SKILL.** A project reminder rule only says when to call it.
 
 `{SKILL_DIR}` = directory of this SKILL.md.
+
+Content can be anything: a decision, a metric, an instruction, a write-up, an agreement. Rules below do not assume a document shape.
 
 ## Scope
 
 | In | Out |
 | --- | --- |
-| `.md` for leads / wiki draft / live-page patch / publish | Internal research, exploration, `.tmp` |
-| User-facing strings in a demo Canvas (`.canvas.tsx`) | Canvas without a demo goal; React refactors |
-| Form (lead, prose, captions, anti-agent-meta) | Changing meaning of bets / decisions / numbers without confirm |
+| Text a person will read to understand or act | Chat, thread, DM, status – use a voice skill if you have one |
+| Prose in `.md`, a wiki page, a ticket, a Canvas string the person sees | Agent scratch: `log.md`, `.tmp`, `agent-notes`, raw transcript |
+| Form: facts, density, duplication, slop | Code, imports, numbers as data |
 
-**Chat / messenger drafts:** use a dedicated voice skill if you have one – not this.  
-**Fallback:** path unclear → ask; meaning disputed after rewrite → show diff and ask. Do not publish.
+**Test:** will a person read this to understand or take a step? Yes → this skill. Genre and folder do not matter.
+
+**Publish** is a separate project rule. This skill does not send anything.
+
+**Fallback:** invoked with no path and no file in hand → ask which file. A change that would alter a fact → keep the source wording and name it in the report. Do not stop for approval.
 
 ## Preconditions
 
-- [ ] Path to `.md` / `.canvas.tsx` (from `$ARGUMENTS` or a question). Canvas often lives in Cursor `canvases/` – need an absolute path
-- [ ] Intent = outbound / demo (or explicit `/human-doc-voice`)
+- [ ] Polishing a file: path from `$ARGUMENTS` or the file being written. Canvas often lives in Cursor `canvases/` – use an absolute path
+- [ ] Composing: write the new text to this contract; no separate detect pass
 - [ ] `{SKILL_DIR}/scripts/check.sh` is available
 
 ## Contract
 
 ### 0. Mode (CRITICAL)
 
-**Detect-only – default first pass.** Flags only, **no Edit/Write** on the target file. Edits only after explicit «ok» / «fix» / «apply» from the user.
+**Apply immediately.** Edit the file. Do not return a flag table and wait.
 
-**Apply – second pass.** After «ok»: targeted contract fixes + dedup. Not the goal – rewrite everything. If a fragment is already fine (e.g. «Main takeaway»), leave it.
+Leave a fragment that is already clear. Do not rewrite every heading or caption «just in case».
 
-After targeted edits from user comments – **run the whole document** for the same error pattern (not only the highlighted fragment).
+After a local fix, run the same pattern over the whole text.
 
-Antipattern: «must rewrite every Caption/Callout» → excess, ruins good text.
+**Not imported:** em-dash ban, «kill all adverbs», blog personality, forced «you». En dash «–» (U+2013) is fine; em dash (U+2014) is not.
 
-**Upstream, not imported:** em-dash ban, «kill all adverbs», reader-in-the-room / direct «you» / personality from humanizer and stop-slop. Register – formal leadership report; en dash «–» per project typography – OK.
+### 1. Priority
 
-### 1. Tone: formal report, not personal chat
+If rules conflict: do not distort meaning → the reader can understand or act → be short → the rest.
 
-Report for leads / teams: businesslike, dense.  
-No conversational slang, no «as if over coffee».
+### 2. Register
 
-| OK | Not OK |
-| --- | --- |
-| Главный вывод · TL;DR · Итоги | Если коротко · Собрал … · реально страдают / больно |
-| Сегменты с низкими оценками | Кому хуже всего |
-| Свободная обратная связь | Свободный текст и блок «…» |
-| Насколько продукты известны | Кто знает какие продукты |
+Text for a person. Not a leadership-report template and not chat.
 
-Do not copy chat softeners («пж», «на всякий»).
+Cut chat softeners («пж», «на всякий», «если коротко») and fake liveliness (a domestic metaphor instead of a fact, an aphoristic ending, a heading that is only a reply).
 
-### 2. Headings name the content
+Keep the domain word. Do not translate a team term into a «neutral» synonym.
 
-H1/H2 must answer «what is in this section?», not survey mechanics or internal assembly slang.  
-If a heading is unclear without knowing the questionnaire – rephrase.
-
-### 3. Disclaimers: clear payoff or delete (CRITICAL)
-
-A methodology / disclaimer sentence is allowed **only** if without it a number misleads.
-
-| Action | When |
-| --- | --- |
-| Keep short | Needed to interpret a number («Speed – DWH only») |
-| Delete | Unclear why; sounds like «do not trust the results»; duplicates a heading/table |
-| Rewrite | There is meaning, but jargon («non-representative sample», «long paths») |
-
-The reader must not wonder: «does this mean we cannot trust the survey?»
-
-### 4. Anti-agent-meta + anti-kitchen
-
-Forbidden in reader-facing body:
-
-- agent-meta: `влито`, `gap → must`, `residual`, session src, Artifact Review Log, «merge X × Y», `keyword-кластер`, `fill rate`, `verbatim`, `baseline`/`friction` as labels, `Q4`/`Q9` codes in UI
-- analyst kitchen: «long paths», «wave figure», «we are not inflating», «a separate section is not needed», «we look at that over there…», «masks the group» without decoding
-- meta about document structure instead of a fact about the data
-
-### 5. Anti-slop + anti-padding (CRITICAL)
-
-**Fix / ban:** «паттерн», «кластер», «охват метрик», «сигнал волны», «когорта», «сходимость», «Mean», «n=» as decoration, bureaucratic glue, empty connectors.
-
-**CSAT** – OK as a metric name if expanded once («share of 4–5 ratings»).
-
-**NPS:** check the target metric definition before banning the word. Do not call a satisfaction share (4–5) «NPS». Do not promise a «comparable NPS» by rescaling to 0–10 unless that is the actual instrument. If the team uses a custom scale, name whose canon it is.
-
-**Hard antipattern:** inflate a caption when the heading or numbers already carry the meaning.
-
-Rule: every sentence in a Caption = a fact or a necessary qualifier. Otherwise cut.  
-A caption that only restates the neighboring Stat/heading – delete.
-
-**Syntax is the main source of «AI» sound.** Clean lexicon still reads machine-like if sentences are impersonal, glued with punctuation, and hung on nominalizations.
+Name who acts. Imperative «you» only when the text is an instruction to that reader. Otherwise the subject is whoever does the action – a person, a service, a tool – not a forced address and not an impersonal verb.
 
 | Pattern | Not OK | OK |
 | --- | --- | --- |
-| Impersonal 3rd person where there is a reader | «считают и заказывают по юниту» | «считайте и заказывайте по юниту» |
-| Infinitive instead of an actor | «Пакет передайте лиду: сверить, уточнить» | «Пакет передайте лиду – он сверит цифры и уточнит» |
 | Passive where there is a subject | «дельта пересчитывается в серверные единицы» | «калькулятор переводит дельту в серверные единицы» |
-| Dash and colon instead of a conjunction | «Если она не пустая – учтите объём» | «Если она не пустая, учтите объём» |
+| Infinitive instead of an actor | «Пакет передайте лиду: сверить, уточнить» | «Пакет передайте лиду – он сверит цифры и уточнит» |
+| Dash or colon instead of a conjunction | «Если она не пустая – учтите объём» | «Если она не пустая, учтите объём» |
 | Nominalization instead of a verb | «это вход в расчёт на шаге 5» | «понадобится на шаге 5» |
 | Root repeated in one phrase | «домен скрывает объекты без домена» | «фильтр домена отбрасывает объекты без разметки» |
 
 Read-aloud test: if you stumble, a conjunction is missing or the subject is hidden.
 
-**A tic is frequency, not the construction (CRITICAL).** Once or twice sounds like an author; in every paragraph – like a generator. Thresholds: `scripts/tics.py`.
+### 3. Facts (CRITICAL)
+
+Modality, a part of a number (year, unit), negation, scope, and a list stay as in the source. «Пробуем» does not become «делаем». Silence in the source stays silence.
+
+Do not invent an owner, a date, or a decision. Mark the gap in the text, short and in place.
+
+An evaluative word only next to a fact. Do not rename a metric. Example, not a special section: a share of 4–5 ratings is not NPS unless that is the instrument.
+
+A qualifier stays only if without it a fact is misread. Otherwise cut. Example: «non-representative sample» with no gloss either becomes a plain limit («цифры про ответивших») or goes.
+
+### 4. Reader
+
+The point is at the top of the text and at the top of a section. Someone who stops early still leaves with a whole answer, just a shorter one.
+
+A heading names what is in the section, without knowing how the text was assembled. A questionnaire code in a heading is one example, not the only case.
+
+No assembly kitchen in the reader-facing body: how the text was merged, question codes, run labels, «a separate section is not needed». `fill rate` and `Q4` are examples of that class, not the full ban list.
+
+The text does not narrate its own history. No sections «что выяснили» or «по итогам обсуждения». A live agreement («со смежниками согласовано: делаем так») stays – that is a fact, not a diary.
+
+Out of scope is a link to where that scope is described, not a section «не делаем». A boundary that is itself a fact («остальные отступы не трогаем») stays.
+
+### 5. One fact, one place (CRITICAL)
+
+The same fact in two places is a duplicate, whatever the form: paragraph, list, table, caption, example. A step / FAQ / roles table is one case of this, not a required outline.
+
+The fact stays where the reader hits it. Other hits – delete or, if the explanation is longer than a line, one pointer. At most one pointer per fact. Dedup does not delete the fact: one place, not zero.
+
+One entity, one name – the name the reader already uses.
+
+A caption or sentence that only restates the heading or the neighboring number – delete.
+
+**Patch of a live page:** read the finished page, including blocks you did not touch.
+
+What you cut goes to «Не вошло» in the report, with where it still lives (source, another section, a link). Nothing disappears silently.
+
+### 6. Slop (CRITICAL)
+
+Empty wrappers and stock phrases – `scripts/lexicon.txt`. Replace with the fact, or cut. Do not ban modality words («может», «должен», «согласовано»): those are facts to preserve.
+
+Three or more bold spans in one paragraph means nothing is emphasized. Thin them. Monospace only for what the reader will copy literally (field, method, command, path). A service or product name is ordinary text.
+
+**A tic is frequency, not the construction.** Once or twice can be the author; in every paragraph it is a generator. Thresholds: `scripts/tics.py`.
 
 | Tic | Threshold | Fix |
 | --- | --- | --- |
-| Antithesis «X, not Y» | >3 per document | Keep where the contrast is the point. Else affirmative |
-| «Значит / Поэтому / Отсюда / то есть» at sentence start | >4 | Drop the linker – order already implies the conclusion |
+| Antithesis «X, not Y» and «не только … но и» | >3 | Keep where the contrast is the point. Else say the point |
+| «Значит / Поэтому / Отсюда / то есть» at sentence start | >4 | Drop the linker |
 | Label-colon «Есть: … Нет: …» | >3 | Same register in every item, or nowhere |
 | Same tail on list items | >3 | Collapse into a table |
-| Same rhythm in every section (numbers → moral) | all sections | Merge some morals, leave some sections without one |
+| Same rhythm in every section (fact → moral) | all sections | Leave some sections without a moral |
 
-### 6. Dedup: one fact – one place (CRITICAL)
+Compression test, not a length quota: what can leave so the reader will not notice? There is no «cut in half» target.
 
-Before language edits – inventory repeats: list key facts/terms and count explanations (`rg` + `check.sh`). The fact stays where the reader hits it in the scenario; other hits – delete or reduce to a pointer.
+### 7. Self-check
 
-| Dup pattern | Fix |
-| --- | --- |
-| One rule in N places (step, callout, FAQ, roles table) | Full explanation at the first scenario hit; then a short reminder or nothing |
-| Mechanics and «why» both repeated | Step = action, FAQ = reason; not both |
-| Prose then a list of the same | Keep the action list + one-line lead-in |
-| Table column with the same value in every row | Lift into the intro |
-| Example duplicates a reference table | Example only has what the calculation needs |
-| Caption restates heading or Stat | Delete (§5) |
-| Same number in observations and again in the plan | Number stays in observations; plan = action without repeating it |
-| Synonyms for one entity | One term per entity, as in the UI |
+Before the report, find and fix:
 
-A pointer is OK if the explanation is longer than a line; else just drop the dup. At most one pointer per fact.
+- a sentence that would fit a document about another system, unchanged
+- a sentence that holds by rhythm and has no fact
+- a verb that needs a human subject, with no human there
 
-Do not introduce entities outside the document scope.
+### 8. Surfaces
 
-**Patch / diff to a live page:** read as a finished page, including untouched blocks. Dup between patch and old text is the most common leak.
+Same checks on every string a person sees, including Canvas headings, captions, callouts, table headers, footer. No separate voice for Canvas. Do not touch numbers, imports, logic, or `cursor/canvas`.
 
-### 7. Lead + ownership
+## Algorithm
 
-Lead 2–4 short sentences: context + main point + who owns / what is out of the doc. No filler.
+1. Composing from material: write from what the reader needs, not from the source’s phrasing. Then check numbers, names, modality, negation, and scope against the source – compression loses them first.
+2. Polishing a path: read it, run the check commands, edit in place. Clear fragments stay.
+3. A local fix → the same pattern over the whole text.
+4. Run `check.sh` again.
+5. Report in chat. Do not wait.
 
-### 8. Canvas: what to touch
+```
+## Отчёт
+- короче: <словами, или «объём почти тот же»>
+- не вошло: <2–3 куска и где лежат>
+- спорное: <одно решение, если мог ошибиться>
+```
 
-Walk user-facing strings (H1/H2, Caption, Callout, table headers, footer).  
-**Edit only** what hits §1–6. Leave good text alone.
-
-Do not touch: numbers, imports, logic, `cursor/canvas`.
-
-## Detect-only (CRITICAL)
-
-**Invoke:**
-
-| How | Behavior |
-| --- | --- |
-| `/human-doc-voice <path>` | Phase A (detect-only) by default |
-| `/human-doc-voice --detect-only <path>` | Explicit flags only; wait for «ok» |
-| `/human-doc-voice --apply <path>` | Skip phase A; apply immediately (flags already reviewed) |
-| «ok» / «fix» / «apply» after flags | Move to phase B on the same path |
-
-**Phase A – detect-only (no file edits):**
-
-1. Path from `$ARGUMENTS` (strip `--detect-only` / `--apply`) or ask.
-2. `{SKILL_DIR}/scripts/check.sh`, `tics.py`, `repeats.py` on path.
-3. Read path; cross-check `references/ai-writing-tells-checklist.md` and `references/structural-tells.md`.
-4. Return flag table: `location | tell | excerpt | fix direction`. Group by severity (SKILL contract > upstream tells).
-5. **STOP.** No Edit/Write, no baseline copy. Ask: «apply fixes?»
-
-**Phase B – apply (only after «ok»):**
-
-1. Baseline – `cp "<path>" ".tmp/human-doc-$(basename "<path>")"`.
-2. Dedup (§6) → language audit → targeted edits (not blanket rewrite).
-3. If edits from user comments – full pass for the same pattern.
-4. `check.sh` again (DoD).
-5. Show changes: dups «dup / before / after»; other edits before→after only; meaning intact.  
-   **HARD STOP:** apply accepted only after second «ok» / «approved» on the diff.
-6. External publish – only after explicit «publish».
-
-## Algorithm (short)
-
-1. Path → **phase A detect-only** (above).
-2. After «ok» → **phase B apply**.
-3. `--apply` in `$ARGUMENTS` → phase B immediately (exception: user already saw flags this session).
+A line with nothing to say is omitted. Do not narrate the steps.
 
 ## Hard Stop Rules
 
-- Do not change meaning (bets, numbers, owners, decisions) without explicit confirm.
-- Do not run the skill on internal WIP/research «for myself» without explicit `/human-doc-voice`.
-- Do not copy this SKILL contract into `.mdc` / other files.
-- Do not publish externally without user confirm.
-- Do not blanket-rewrite «just in case».
-- **Detect-only:** do not edit the file until «ok» on flags; `--apply` – only if user already saw detect-only this session.
-- If the skill was called because of **new** sections: fix your own text. `check.sh` flags on lines outside the diff – show the user, do not silent-edit.
-- Do not slide a formal report into a personal/chat tone.
-- Do not leave a disclaimer the reader cannot understand on the first read.
-- Dedup ≠ deleting the fact: it must remain in exactly one place, not zero.
-- `check.sh` – once on baseline (step 3) and once in DoD. Not after every Edit.
+- Do not upgrade modality, drop part of a number, flip a negation, or widen a scope.
+- Do not invent an owner, a date, or a decision. Mark the gap.
+- Dedup leaves the fact in exactly one place, not zero. Cuts are listed in «Не вошло».
+- Do not copy this contract into `.mdc` or other files.
+- Do not publish. A project publish rule is separate.
+- Do not blanket-rewrite a clear fragment.
+- Do not translate a domain term.
+- Do not add an owner or a «lead» block the source does not have.
+- `check.sh` – once before edits and once at the end. Not after every edit.
 
-## References (detect-only)
+## References
+
+Scan hints, not a genre and not an approval gate.
 
 | File | Purpose |
 | --- | --- |
-| `references/ai-writing-tells-checklist.md` | Compact Wikipedia / humanizer checklist – content, language, chatbot |
-| `references/structural-tells.md` | stop-slop structures: not-X-but-Y, rule-of-three, metronomic rhythm |
-
-Do not fold these into a formal PM report register – checklists live here only.
+| `references/ai-writing-tells-checklist.md` | Wikipedia / humanizer tells – content, language, chatbot |
+| `references/structural-tells.md` | Structures: not-X-but-Y, rule-of-three, metronomic rhythm |
+| `scripts/lexicon.txt` | Empty Russian wrappers. Not a ban on modality. `check.sh` runs `lexicon_scan.py`, `emphasis_scan.py`, `repeats.py`, `tics.py` |
 
 ## Definition of Done
 
-**Detect-only:** flag table delivered; file untouched; waiting for «ok».
-
-**Apply:**
-
-- [ ] `check.sh` ran; heuristic agent-meta / slop / chatty / kitchen markers clean or left on purpose
-- [ ] Dedup: each fact explained in one place
-- [ ] Headings clear without questionnaire knowledge; disclaimers clear or gone
-- [ ] Lead readable in ~60s; no padded captions
-- [ ] Shown dups and before→after **only for changed** spots; language «ok»
-- [ ] External publish not done without «publish»
+- [ ] File edited; clear fragments left alone
+- [ ] `check.sh` at the end; leftover hits are intentional and named in «спорное»
+- [ ] Each fact in one place; modality and numbers match the source
+- [ ] Headings name the content; a qualifier is needed or gone
+- [ ] Report delivered; no wait for «ok»
+- [ ] Nothing published by this skill
 
 ## Example
 
-**In:** `/human-doc-voice report.canvas.tsx`  
-**Bad:** «non-representative sample» with no gloss; «Who knows which products»; caption about «long paths»; «a separate section is not needed».  
-**Good:** drop the disclaimer or «figures are about respondents»; «How well-known the products are»; «Org blocks come from the Department field; tiny groups hidden»; fact without structure-meta.
+Examples of the checks, not a required document type.
 
-**Dedup case:** «then order via the usual process» in 5 places – kept in the roles table and the last step; «why we count by services» in the step and FAQ – kept in FAQ, pointer in the step.
+**In.** A fragment a person will read:
+
+> Важно отметить, что дельта пересчитывается в серверные единицы. Дельта переводится в серверные единицы на шаге 5.
+
+**Out.** Same fact, one place, actor named, empty wrapper gone:
+
+> На шаге 5 калькулятор переводит дельту в серверные единицы.
+
+**Report.** короче на треть. не вошло: повтор про шаг 5. спорное: нет.
 
 ## Gotchas
 
 - Repeat scan skips tables, code, and quotes after `**Было:**` – check those by eye.
-- Punctuation-linker scan is noisy on definitions and captions – a reading hint, not an edit list.
-- One-off HTML export does **not** update itself – re-export after copy changes (`canvas-to-html`).
+- Punctuation-linker scan is noisy on definitions – a hint, not an edit list.
+- Lexicon hits inside a real term or a quote – leave them and say so in «спорное».
+- One-off HTML export does not update itself – re-export after copy changes (`canvas-to-html`).
 
 ## Check commands
 
 ```bash
 "{SKILL_DIR}/scripts/check.sh" "<path>"
-python3 "{SKILL_DIR}/scripts/repeats.py" "<path>"
-python3 "{SKILL_DIR}/scripts/tics.py" "<path>"
 test -x "{SKILL_DIR}/scripts/check.sh"
 ```

@@ -1,26 +1,26 @@
 ---
 created: 2026-09-04
-updated: 2026-09-04
-intent: structural AI tells for detect-only scan
+updated: 2026-09-23
+intent: structural AI tells for the apply pass
 keywords: stop-slop, structures, rule-of-three, antithesis, rhythm
 type: spec
 ---
 
 # Structural tells – detect-only
 
-Condensed from [hardikpandya/stop-slop `references/structures.md`](https://github.com/hardikpandya/stop-slop/blob/main/references/structures.md). Flags only; edits after «ok» (SKILL.md §Detect-only).
+Condensed from [hardikpandya/stop-slop `references/structures.md`](https://github.com/hardikpandya/stop-slop/blob/main/references/structures.md). Scan hints for the apply pass. Not an approval gate.
 
-Frequency thresholds for antithesis and linkers – SKILL §5 + `scripts/tics.py`. This file covers **structure and rhythm**, not lexicon.
+Frequency thresholds for antithesis and linkers – SKILL §6 + `scripts/tics.py`. This file covers structure and rhythm, not lexicon.
 
 ## Excluded (not imported)
 
 | Upstream rule | Why we skip it |
 | --- | --- |
-| Ban em dash; «no em dashes at all» | Formal reports may use en dash «–» (U+2013); em dash (U+2014) – no |
+| Ban em dash; «no em dashes at all» | Prose may use en dash «–» (U+2013); em dash (U+2014) – no |
 | Kill all adverbs (-ly, really, just…) | Too broad; cut only empty emphasis in slop context |
-| Reader in the room / «you» / personality | Register is formal leadership report, not blog; SKILL §1 |
-| Narrator-from-a-distance → «put reader in the seat» | Same – do not shift report into direct address |
-| False agency → always «name the human» | Only when hidden owner/actor breaks the report; not as «you» style |
+| Reader in the room / «you» / personality | Do not import blog «you» or a personality. Imperative only when the text is an instruction to that reader. Otherwise name who acts |
+| Narrator-from-a-distance → «put reader in the seat» | Do not shift a reference text into direct address |
+| False agency → always «name the human» | Name who acts – a person, a service, or a tool. Do not require a human, and do not turn that into «you» |
 
 ## Not X but Y (binary contrasts)
 
@@ -67,6 +67,6 @@ Flag when the contrast is **formulaic**, not informative:
 | Paragraph starts with So | Filler opener |
 | Lazy extremes | every, always, never without numeric support |
 
-## Detect-only output format
+## How to use a hit
 
-Table: `location | tell-id | excerpt | suggested direction` – no file edits until «ok».
+Fix it in the same pass. A formulaic contrast that is the actual point stays.

@@ -1,14 +1,14 @@
 ---
 created: 2026-09-04
-updated: 2026-09-04
-intent: detect-only scan checklist for outbound leadership reports
-keywords: ai-writing, humanizer, wikipedia, detect-only
+updated: 2026-09-23
+intent: scan hints for any text a person will read
+keywords: ai-writing, humanizer, wikipedia
 type: spec
 ---
 
 # AI-writing tells – compact checklist
 
-Detect-only reference. **Do not rewrite from this file** – flags only; edits after user «ok» (see SKILL.md §Detect-only).
+Scan hints for the apply pass. Fix a hit in the same pass. Do not treat this file as an approval gate.
 
 **Source:** [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (WikiProject AI Cleanup); condensed from [blader/humanizer](https://github.com/blader/humanizer) (MIT). We do not copy the upstream skill wholesale.
 

@@ -1,0 +1,611 @@
+{
+  "metadata": {
+    "skill_name": "human-doc-voice",
+    "skill_path": "/Users/eplosev/Projects/jlosev-agent-skills/skills/human-doc-voice",
+    "executor_model": "inline-worker (not independent subagent)",
+    "analyzer_model": "grade_run.py programmatic",
+    "timestamp": "2026-09-23T10:34:18Z",
+    "evals_run": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "runs_per_configuration": 1,
+    "before_version": "1.6.0",
+    "after_version": "1.7.0"
+  },
+  "runs": [
+    {
+      "eval_id": 6,
+      "configuration": "1_with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 2,
+        "failed": 0,
+        "total": 2,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "should_not_invoke: скилл не применён",
+          "passed": true,
+          "evidence": "не применён"
+        },
+        {
+          "text": "scope_out: чат/log в out-of-scope описания",
+          "passed": true,
+          "evidence": "out-of-scope в description"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 5,
+      "configuration": "1_with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 2,
+        "failed": 0,
+        "total": 2,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "should_not_invoke: скилл не применён",
+          "passed": true,
+          "evidence": "не применён"
+        },
+        {
+          "text": "scope_out: чат/log в out-of-scope описания",
+          "passed": true,
+          "evidence": "out-of-scope в description"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "1_with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "edit_applied: выход — отредактированный текст, не только таблица флагов",
+          "passed": true,
+          "evidence": "Файл изменён"
+        },
+        {
+          "text": "no_ok_prompt: нет просьбы «ок», «apply?», «применить правки?»",
+          "passed": true,
+          "evidence": "OK-промпта нет"
+        },
+        {
+          "text": "modality_preserved: «пробуем» есть, «делаем» как замена модальности — нет",
+          "passed": true,
+          "evidence": "пробуем=да"
+        },
+        {
+          "text": "wrapper_removed: «важно отметить» снято",
+          "passed": true,
+          "evidence": "обёртка снята"
+        },
+        {
+          "text": "fact_preserved: service desk, рабочих дней в тексте или в «Не вошло»",
+          "passed": true,
+          "evidence": "факты на месте"
+        },
+        {
+          "text": "register_ok: нет тона отчёта для лидов (Главный вывод / TL;DR / lead-block)",
+          "passed": true,
+          "evidence": "lead-маркеров нет"
+        },
+        {
+          "text": "genre_not_refused: нет отказа из‑за жанра",
+          "passed": true,
+          "evidence": "отказа нет"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "1_with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "edit_applied: выход — отредактированный текст, не только таблица флагов",
+          "passed": true,
+          "evidence": "Файл изменён"
+        },
+        {
+          "text": "no_ok_prompt: нет просьбы «ок», «apply?», «применить правки?»",
+          "passed": true,
+          "evidence": "OK-промпта нет"
+        },
+        {
+          "text": "modality_preserved: «пробуем» есть, «делаем» как замена модальности — нет",
+          "passed": true,
+          "evidence": "пробуем=да"
+        },
+        {
+          "text": "wrapper_removed: «следует подчеркнуть» снято",
+          "passed": true,
+          "evidence": "обёртка снята"
+        },
+        {
+          "text": "fact_preserved: 12%, p95 в тексте или в «Не вошло»",
+          "passed": true,
+          "evidence": "факты на месте"
+        },
+        {
+          "text": "register_ok: нет тона отчёта для лидов (Главный вывод / TL;DR / lead-block)",
+          "passed": true,
+          "evidence": "lead-маркеров нет"
+        },
+        {
+          "text": "genre_not_refused: нет отказа из‑за жанра",
+          "passed": true,
+          "evidence": "отказа нет"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 4,
+      "configuration": "1_with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "edit_applied: выход — отредактированный текст, не только таблица флагов",
+          "passed": true,
+          "evidence": "Файл изменён"
+        },
+        {
+          "text": "no_ok_prompt: нет просьбы «ок», «apply?», «применить правки?»",
+          "passed": true,
+          "evidence": "OK-промпта нет"
+        },
+        {
+          "text": "modality_preserved: «пробуем» есть, «делаем» как замена модальности — нет",
+          "passed": true,
+          "evidence": "пробуем=да"
+        },
+        {
+          "text": "wrapper_removed: «важно отметить» снято",
+          "passed": true,
+          "evidence": "обёртка снята"
+        },
+        {
+          "text": "fact_preserved: validate.sh, lint-warning в тексте или в «Не вошло»",
+          "passed": true,
+          "evidence": "факты на месте"
+        },
+        {
+          "text": "register_ok: нет тона отчёта для лидов (Главный вывод / TL;DR / lead-block)",
+          "passed": true,
+          "evidence": "lead-маркеров нет"
+        },
+        {
+          "text": "genre_not_refused: нет отказа из‑за жанра",
+          "passed": true,
+          "evidence": "отказа нет"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "1_with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "edit_applied: выход — отредактированный текст, не только таблица флагов",
+          "passed": true,
+          "evidence": "Файл изменён"
+        },
+        {
+          "text": "no_ok_prompt: нет просьбы «ок», «apply?», «применить правки?»",
+          "passed": true,
+          "evidence": "OK-промпта нет"
+        },
+        {
+          "text": "modality_preserved: «пробуем» есть, «делаем» как замена модальности — нет",
+          "passed": true,
+          "evidence": "пробуем=да"
+        },
+        {
+          "text": "wrapper_removed: «необходимо осуществить» снято",
+          "passed": true,
+          "evidence": "обёртка снята"
+        },
+        {
+          "text": "fact_preserved: 01.10, on-call в тексте или в «Не вошло»",
+          "passed": true,
+          "evidence": "факты на месте"
+        },
+        {
+          "text": "register_ok: нет тона отчёта для лидов (Главный вывод / TL;DR / lead-block)",
+          "passed": true,
+          "evidence": "lead-маркеров нет"
+        },
+        {
+          "text": "genre_not_refused: нет отказа из‑за жанра",
+          "passed": true,
+          "evidence": "отказа нет"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 6,
+      "configuration": "2_old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 2,
+        "failed": 0,
+        "total": 2,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "should_not_invoke: скилл не применён",
+          "passed": true,
+          "evidence": "не применён"
+        },
+        {
+          "text": "scope_out: чат/log в out-of-scope описания",
+          "passed": true,
+          "evidence": "out-of-scope в description"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 5,
+      "configuration": "2_old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 2,
+        "failed": 0,
+        "total": 2,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "should_not_invoke: скилл не применён",
+          "passed": true,
+          "evidence": "не применён"
+        },
+        {
+          "text": "scope_out: чат/log в out-of-scope описания",
+          "passed": true,
+          "evidence": "out-of-scope в description"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "2_old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.5714,
+        "passed": 4,
+        "failed": 3,
+        "total": 7,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "edit_applied: выход — отредактированный текст, не только таблица флагов",
+          "passed": false,
+          "evidence": "Только флаги или файл не тронут"
+        },
+        {
+          "text": "no_ok_prompt: нет просьбы «ок», «apply?», «применить правки?»",
+          "passed": false,
+          "evidence": "OK-промпт найден"
+        },
+        {
+          "text": "modality_preserved: «пробуем» есть, «делаем» как замена модальности — нет",
+          "passed": true,
+          "evidence": "пробуем=да"
+        },
+        {
+          "text": "wrapper_removed: «важно отметить» снято",
+          "passed": false,
+          "evidence": "обёртка осталась"
+        },
+        {
+          "text": "fact_preserved: service desk, рабочих дней в тексте или в «Не вошло»",
+          "passed": true,
+          "evidence": "факты на месте"
+        },
+        {
+          "text": "register_ok: нет тона отчёта для лидов (Главный вывод / TL;DR / lead-block)",
+          "passed": true,
+          "evidence": "lead-маркеров нет"
+        },
+        {
+          "text": "genre_not_refused: нет отказа из‑за жанра",
+          "passed": true,
+          "evidence": "отказа нет"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "2_old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.5714,
+        "passed": 4,
+        "failed": 3,
+        "total": 7,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "edit_applied: выход — отредактированный текст, не только таблица флагов",
+          "passed": false,
+          "evidence": "Только флаги или файл не тронут"
+        },
+        {
+          "text": "no_ok_prompt: нет просьбы «ок», «apply?», «применить правки?»",
+          "passed": false,
+          "evidence": "OK-промпт найден"
+        },
+        {
+          "text": "modality_preserved: «пробуем» есть, «делаем» как замена модальности — нет",
+          "passed": true,
+          "evidence": "пробуем=да"
+        },
+        {
+          "text": "wrapper_removed: «следует подчеркнуть» снято",
+          "passed": false,
+          "evidence": "обёртка осталась"
+        },
+        {
+          "text": "fact_preserved: 12%, p95 в тексте или в «Не вошло»",
+          "passed": true,
+          "evidence": "факты на месте"
+        },
+        {
+          "text": "register_ok: нет тона отчёта для лидов (Главный вывод / TL;DR / lead-block)",
+          "passed": true,
+          "evidence": "lead-маркеров нет"
+        },
+        {
+          "text": "genre_not_refused: нет отказа из‑за жанра",
+          "passed": true,
+          "evidence": "отказа нет"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 4,
+      "configuration": "2_old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.5714,
+        "passed": 4,
+        "failed": 3,
+        "total": 7,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "edit_applied: выход — отредактированный текст, не только таблица флагов",
+          "passed": false,
+          "evidence": "Только флаги или файл не тронут"
+        },
+        {
+          "text": "no_ok_prompt: нет просьбы «ок», «apply?», «применить правки?»",
+          "passed": false,
+          "evidence": "OK-промпт найден"
+        },
+        {
+          "text": "modality_preserved: «пробуем» есть, «делаем» как замена модальности — нет",
+          "passed": true,
+          "evidence": "пробуем=да"
+        },
+        {
+          "text": "wrapper_removed: «важно отметить» снято",
+          "passed": false,
+          "evidence": "обёртка осталась"
+        },
+        {
+          "text": "fact_preserved: validate.sh, lint-warning в тексте или в «Не вошло»",
+          "passed": true,
+          "evidence": "факты на месте"
+        },
+        {
+          "text": "register_ok: нет тона отчёта для лидов (Главный вывод / TL;DR / lead-block)",
+          "passed": true,
+          "evidence": "lead-маркеров нет"
+        },
+        {
+          "text": "genre_not_refused: нет отказа из‑за жанра",
+          "passed": true,
+          "evidence": "отказа нет"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "2_old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.5714,
+        "passed": 4,
+        "failed": 3,
+        "total": 7,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "edit_applied: выход — отредактированный текст, не только таблица флагов",
+          "passed": false,
+          "evidence": "Только флаги или файл не тронут"
+        },
+        {
+          "text": "no_ok_prompt: нет просьбы «ок», «apply?», «применить правки?»",
+          "passed": false,
+          "evidence": "OK-промпт найден"
+        },
+        {
+          "text": "modality_preserved: «пробуем» есть, «делаем» как замена модальности — нет",
+          "passed": true,
+          "evidence": "пробуем=да"
+        },
+        {
+          "text": "wrapper_removed: «необходимо осуществить» снято",
+          "passed": false,
+          "evidence": "обёртка осталась"
+        },
+        {
+          "text": "fact_preserved: 01.10, on-call в тексте или в «Не вошло»",
+          "passed": true,
+          "evidence": "факты на месте"
+        },
+        {
+          "text": "register_ok: нет тона отчёта для лидов (Главный вывод / TL;DR / lead-block)",
+          "passed": true,
+          "evidence": "lead-маркеров нет"
+        },
+        {
+          "text": "genre_not_refused: нет отказа из‑за жанра",
+          "passed": true,
+          "evidence": "отказа нет"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "1_with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "2_old_skill": {
+      "pass_rate": {
+        "mean": 0.7143,
+        "stddev": 0.2213,
+        "min": 0.5714,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.29",
+      "time_seconds": "+0.0",
+      "tokens": "+0"
+    }
+  },
+  "notes": [
+    "Trigger-only pass rate: v1.7.0 100% (28/28), v1.6.0 57% (16/28).",
+    "v1.6.0 fails edit_applied + no_ok_prompt + wrapper_removed on all 4 trigger evals (detect-only default).",
+    "Anti-trigger: description scope OK for both versions; runtime trigger rate not measured.",
+    "Executor was inline worker following SKILL contract, not parallel subagents."
+  ]
+}
