@@ -1,7 +1,7 @@
 ---
 ---
 created: 2026-09-15
-updated: 2026-09-23
+updated: 2026-09-28
 ---
 
 # agent-skills
@@ -36,7 +36,7 @@ Catalog: [skills.sh/jlosev/agent-skills](https://skills.sh/jlosev/agent-skills).
 | Skill | What it does |
 | --- | --- |
 | `human-doc-voice` | Any text a person will read. Cut slop, keep facts, apply immediately |
-| `critic` | Manual adversarial review via an isolated Opus 5 subagent |
+| `critic` | Manual adversarial review via an isolated Opus 5.5 subagent |
 | `canvas-to-html` | Export a Cursor Canvas to static HTML |
 | `tool-market-scout` | JTBD-first Buy / Build / Hybrid / Defer |
 | `prompt-engineer` | Lint/review agent instruction files (SKILL.md, agent, CLAUDE.md, protocol); not scaffold or chat-prompt |

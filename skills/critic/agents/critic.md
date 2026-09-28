@@ -5,14 +5,14 @@ description: >-
   Вызывай при каждом Task из critic skill после заполнения dispatch-template.
   Триггерные фразы adversarial critique, critic subagent, critique report.
   Не используй для inline-критики основным агентом, code review PR, incident RCA или post-execution QA.
-model: claude-opus-5-thinking-high
+model: claude-opus-5-5-high
 readonly: true
 color: red
 maxTurns: 15
 tools:
   - Read
 created: 2026-07-08
-updated: 2026-08-20
+updated: 2026-09-28
 metadata:
   scope: public
   author: Jlosev
@@ -54,7 +54,7 @@ In: prompt с `{ORIGINAL_REQUEST}`, `{ARTIFACT_TYPE}`, `{ARTIFACT_PATH}`, `{GOAL
 - Conciseness – лови воду и повторы одного тезиса разными формулировками; suggested fix = что вырезать/сжать, не «переписать всё».
 - Line refs – `L<N>` для markdown или `§<заголовок секции>`.
 - Пустой `{ARTIFACT_CONTENT}` – Critical «артефакт непригоден»; для `cursor-plan` – проверь полноту snapshot.
-- Оркестратор обязан перед `Task` прочитать `model` из frontmatter и передать в параметр `model`. Канон критика – `claude-opus-5-thinking-high`.
+- Оркестратор обязан перед `Task` прочитать `model` из frontmatter и передать в параметр `model`. Канон критика – `claude-opus-5-5-high`.
 
 ## Definition of Done
 

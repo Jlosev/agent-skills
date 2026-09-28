@@ -7,16 +7,16 @@ description: >
 metadata:
   scope: public
   author: Jlosev
-  version: "2.0.2"
+  version: "2.0.3"
   tags: "{critic,orchestrator,review,research,planning}"
 created: 2026-07-08
-updated: 2026-09-04
+updated: 2026-09-28
 user-invocable: true
 ---
 
 # Critic – artifact adversarial review orchestrator
 
-The parent agent **does not critique the artifact itself**. On **manual** start it dispatches an isolated Opus 5 subagent, applies structured criticism, and revises the document until handoff.
+The parent agent **does not critique the artifact itself**. On **manual** start it dispatches an isolated Opus 5.5 subagent, applies structured criticism, and revises the document until handoff.
 
 `{SKILL_DIR}` = directory of this SKILL.md. All skill paths are relative to `{SKILL_DIR}`.
 
@@ -41,7 +41,7 @@ Fallback: no Task/subagent – Hard Stop, do not proceed to the action
 - The subagent **does not see** chat history – pass `{ORIGINAL_REQUEST}`, `{ARTIFACT_CONTENT}`, `{GOAL_FROM_ARTIFACT}` in the prompt (`references/critic-dispatch-template.md`).
 - Do not mix with PR/diff review or an incident-RCA critic.
 - Cursor Plan Mode often **does not** save a file – a full-text snapshot in `{ARTIFACT_CONTENT}` is required.
-- **Critic model is Opus 5.** Before `Task` read `model` from `{SKILL_DIR}/agents/critic.md` and pass it. Do not substitute a cheap default.
+- **Critic model is Opus 5.5.** Before `Task` read `model` from `{SKILL_DIR}/agents/critic.md` and pass it. Do not substitute a cheap default.
 - A critique phase inside another research skill ≠ this skill.
 - **Do not patch** producer skills just to add a gate.
 - For `research-conclusion`: unread source listed in Open Questions + an immediate action with owner/deadline/DoD may be **Accepted residual** in round ≥2.
@@ -72,7 +72,7 @@ Fallback: no Task/subagent – Hard Stop, do not proceed to the action
 
 **Isolated Opus critique only** – no interview prompts, design-tree, or user QN in the subagent prompt. The subagent returns a structured report; user clarifications belong to the orchestrator (Step 3b).
 
-1. Read `{SKILL_DIR}/agents/critic.md` – take `model` from frontmatter (canon – `claude-opus-5-thinking-high`).
+1. Read `{SKILL_DIR}/agents/critic.md` – take `model` from frontmatter (canon – `claude-opus-5-5-high`).
 2. Before dispatch: gather environment facts needed for critique (files, tools, URLs) yourself – do not ask the user.
 3. Fill `{SKILL_DIR}/references/critic-dispatch-template.md`.
 4. Call **only** via `Task`:
@@ -80,7 +80,7 @@ Fallback: no Task/subagent – Hard Stop, do not proceed to the action
 ```json
 {
   "subagent_type": "generalPurpose",
-  "model": "claude-opus-5-thinking-high",
+  "model": "claude-opus-5-5-high",
   "readonly": true,
   "run_in_background": false,
   "description": "Adversarial critique",
@@ -125,7 +125,7 @@ Fallback: no Task/subagent – Hard Stop, do not proceed to the action
 - **Verdict REVISE** – stop handoff until a re-round or explicit user ack.
 - **>3 rounds with repeating Critical** – stop, escalate.
 - **Empty or truncated `{ARTIFACT_CONTENT}`** – stop; snapshot Plan Mode first.
-- **`model`** – only from the agent frontmatter (`claude-opus-5-thinking-high`).
+- **`model`** – only from the agent frontmatter (`claude-opus-5-5-high`).
 - **No environment QN to the user** – fs/tools/URLs are gathered by the orchestrator; QN only via Step 3b (residual policy/trade-off) with WAIT.
 - **No grill-me / design-tree in Step 2–3** – subagent does not run interviews; orchestrator does not survey the whole plan.
 
@@ -133,7 +133,7 @@ Fallback: no Task/subagent – Hard Stop, do not proceed to the action
 
 - [ ] Artifact fixed (file or full snapshot) with `{ARTIFACT_TYPE}`
 - [ ] Consent received (phrase or yes)
-- [ ] Critic called via `Task` on Opus 5, not inline
+- [ ] Critic called via `Task` on Opus 5.5, not inline
 - [ ] Structured report received
 - [ ] All Critical/Important handled (fixed, verified via environment, or closed via QN + user answer)
 - [ ] Residual Important needing user decision formatted as QN + Recommended; handoff only after answer or explicit ack
@@ -167,6 +167,6 @@ test -f "$SKILL_DIR/agents/critic.md"
 test -f "$SKILL_DIR/references/critic-dispatch-template.md"
 test -f "$SKILL_DIR/references/critique-rubric.md"
 test -f "$SKILL_DIR/references/artifact-types.md"
-grep -q 'claude-opus-5-thinking-high' "$SKILL_DIR/agents/critic.md"
+grep -q 'claude-opus-5-5-high' "$SKILL_DIR/agents/critic.md"
 grep -q 'readonly: true' "$SKILL_DIR/agents/critic.md"
 ```
