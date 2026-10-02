@@ -162,7 +162,7 @@ Weights below are a local heuristic for the lint report.
 | Named failure modes | major (stateful) | есть ≥2 явных «failure mode = X → stop/fix»; иначе → добавить таблицу |
 | STOP before mutate/artifact | major | перед Write destructive / финальным артефактом есть STOP + wait user или script gate |
 | Escape hatch с partial resistance | minor | если есть skip/«просто сделай» – 1-й skip ≠ full abort критичных фаз |
-| Progressive disclosure | major | Вынести ветку, если она условная или ≥30 строк. Шаги, которые выполняются всегда и вместе укладываются в 60–150 строк, остаются в теле. Вынесенный шаг в скелете: имя, путь, «прочитай сейчас, следующий файл не открывай». Major, если скелет велит прочитать все `phases/` или `references/` до старта |
+| Progressive disclosure | major | Вынести ветку, если она условная или ≥30 строк. Шаги, которые выполняются всегда и вместе укладываются в 60–150 строк, остаются в теле. Вынесенный шаг в скелете: имя, путь, результат шага, «прочитай сейчас, следующий файл не открывай». Major, если скелет велит прочитать все фазы до старта или шаг в теле только «прочитай файл» без результата. Оценщик Hub читает лишь тело SKILL.md |
 | Reference depth and TOC | minor | Каждый `phases/` и `references/` файл назван прямо в SKILL.md, не через другой reference. У файла длиннее 100 строк оглавление вверху |
 | Section / phase self-check | minor (multi-phase) | перед DONE – confirm Read нужных phase/section файлов |
 | Completion vocabulary | minor | `DONE` / `DONE_WITH_CONCERNS` / `BLOCKED` / `NEEDS_CONTEXT` вместо только «готово» |

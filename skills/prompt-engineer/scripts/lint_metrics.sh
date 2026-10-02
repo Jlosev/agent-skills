@@ -13,9 +13,13 @@ echo "skill_deps: $(grep -ciE 'сначала (вызови|запусти|ис�
 echo "has_example_section: $(grep -cE '^## Пример|^## Example|^## Examples' "$FILE" 2>/dev/null || true)"
 echo "has_preconditions: $(grep -cE '^## Preconditions|^## Предусловия' "$FILE" 2>/dev/null || true)"
 python3 - "$FILE" <<'PY'
-import re, sys
+import os, re, sys
 path = sys.argv[1]
 text = open(path, encoding="utf-8").read()
+root = os.path.dirname(os.path.abspath(path))
+cited = set(re.findall(r"(?<![A-Za-z0-9_./-])(?:references|scripts|phases)/[A-Za-z0-9_./-]+\.[A-Za-z0-9]+", text))
+missing = [rel for rel in sorted(cited) if not os.path.isfile(os.path.join(root, rel))]
+print("missing_deps:", ", ".join(missing) if missing else "none")
 m = re.match(r"^---\n(.*?)\n---", text, re.S)
 if not m:
     print("colon_in_description: N/A")

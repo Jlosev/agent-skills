@@ -8,7 +8,7 @@ description: >
 metadata:
   scope: public
   author: Jlosev
-  version: "1.2.2"
+  version: "1.2.3"
   tags: "skill-dev,prompt-engineering,lint"
 created: 2026-09-03
 updated: 2026-10-02
@@ -29,9 +29,10 @@ Fallback: generic checklist + ask the type
 
 ## Preconditions
 
-- [ ] Target file path from `$ARGUMENTS`.
-- [ ] `references/quality-guide.md` read.
-- [ ] If called from a multi-skill factory pipeline – only after the orchestrator’s validation checkpoint.
+- [ ] Target file path from `$ARGUMENTS`. Нет пути → спроси в чат, не угадывай файл.
+- [ ] `test -f "{SKILL_DIR}/references/quality-guide.md"`. Нет файла → стоп: «нет references/quality-guide.md».
+- [ ] `test -f "{SKILL_DIR}/scripts/lint_metrics.sh"`. Нет файла → стоп: «нет scripts/lint_metrics.sh».
+- [ ] Если вызов из factory – только после validation checkpoint оркестратора.
 
 ## Algorithm
 
@@ -65,6 +66,8 @@ Description metrics: character length, `:` check, trigger phrases, negative trig
 
 Also: compression, anti-patterns table, token estimate (words×1.3), extraction (conditional ≥30 lines → `references/`).
 
+`missing_deps` из скрипта → major: файл из `references/`, `scripts/` или `phases/` назван, но его нет. Оценщик Hub видит только тело SKILL.md, поэтому в теле остаётся сам шаг, в файл уходит длинная процедура.
+
 ### Step 3: Report
 
 ```
@@ -90,7 +93,7 @@ A=0 critical ≤1 major | B=0 critical ≤3 major | C=1+ critical
 
 ### Step 4: Apply
 
-Ask «Apply? (all / selected / no)». Fixes are exact replacement text, not «improve wording».
+Спроси «Apply? (all / selected / no)». Если нет AskQuestion, тот же вопрос текстом в чат. Правки – точный текст замены.
 
 ### Step 5: Post-run
 
@@ -110,6 +113,16 @@ If lint found ≥1 major on the quality criteria – propose 1 concrete improvem
 | clarity ❌ | examples ❌ | preconditions ❌ | … |
 **Grade:** C
 Apply fixes? (all / selected / no)
+```
+
+**In:** «lint agent .agents/agents/cf-publisher.md»
+
+```
+## Prompt Engineer: cf-publisher.md
+**Type:** Agent | **Size:** ~200 tok | **DoD:** Fail
+### Major
+- description: нет when to delegate → «Use when the parent must publish a Confluence page»
+**Grade:** C
 ```
 
 ## Hard Stop Rules
@@ -141,5 +154,5 @@ grep -A5 '^description:' <file>   # no ':' in value lines
 - preconditions ≠ Hard Stop Rules
 - agent_agnostic minor does not block publication
 - description >400 major; `:` critical
-- always-on short steps stay in the body; an extracted step is read at entry, not all phases up front |
+- always-on short steps stay in the body; an extracted step is read at entry, not all phases up front
 - Use «Trigger phrases …» instead of «Triggers:» in description (avoid `:`)
