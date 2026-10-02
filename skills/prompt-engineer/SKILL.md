@@ -7,8 +7,8 @@ description: >
   Not for scaffolding a new skill from scratch, chat-prompt optimization, or model-specific prompt research.
 metadata:
   scope: public
-  author: Jlosev
-  version: "1.2.3"
+  author: eplosev
+  version: "1.2.4"
   tags: "skill-dev,prompt-engineering,lint"
 created: 2026-09-03
 updated: 2026-10-02
