@@ -8,10 +8,10 @@ description: >
 metadata:
   scope: public
   author: Jlosev
-  version: "1.2.0"
+  version: "1.2.2"
   tags: "skill-dev,prompt-engineering,lint"
 created: 2026-09-03
-updated: 2026-09-04
+updated: 2026-10-02
 user-invocable: true
 ---
 
@@ -141,5 +141,5 @@ grep -A5 '^description:' <file>   # no ':' in value lines
 - preconditions ≠ Hard Stop Rules
 - agent_agnostic minor does not block publication
 - description >400 major; `:` critical
-- unconditional steps stay in the body, not in references/
+- always-on short steps stay in the body; an extracted step is read at entry, not all phases up front |
 - Use «Trigger phrases …» instead of «Triggers:» in description (avoid `:`)

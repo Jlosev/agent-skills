@@ -1,0 +1,125 @@
+{
+  "skill_name": "prompt-engineer",
+  "evals": [
+    {
+      "id": 0,
+      "name": "missing-scope",
+      "prompt": "проверь этот SKILL.md — кажется там куча проблем с форматом и описанием. Файл: .agents/skills/prompt-engineer/evals/fixtures/missing-scope/SKILL.md. Нужен полный отчёт prompt-engineer, без правок в файле пока.",
+      "expected_output": "Структурированный отчёт Prompt Engineer с секциями Critical/Major/Minor, оценкой A–D, Skills Hub Quality table, находками по quality-guide: description описывает internals, нет Scope, boilerplate, negatives, CoT-фразы, нет output format.",
+      "files": [
+        "skills/prompt-engineer/evals/fixtures/missing-scope/SKILL.md"
+      ],
+      "expectations": [
+        "Отчёт содержит заголовок 'Prompt Engineer' или 'Prompt Engineer:'",
+        "Отчёт содержит секцию Critical, Major или Minor с нумерованными находками",
+        "Отчёт указывает проблему description (internals / слишком длинный / не триггеры)",
+        "Отчёт отмечает отсутствие секции Scope или output format",
+        "Отчёт содержит anti-pattern findings: boilerplate ('please', 'make sure') или negatives ('Don't', 'NEVER')",
+        "Отчёт содержит Skills Hub Quality table или упоминает examples/preconditions/self_containment",
+        "Отчёт содержит буквенную оценку A, B, C или D",
+        "Отчёт НЕ вносит правки в исходный SKILL.md (только анализ)"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "wall-of-text",
+      "prompt": "lint SKILL.md — wall of text, ничего не понятно. Путь: .agents/skills/prompt-engineer/evals/fixtures/wall-of-text/SKILL.md. Дай review по quality-guide.",
+      "expected_output": "Отчёт выявляет wall-of-text (нет секций/шагов), description без триггеров, отсутствие структуры и output spec; предлагает конкретные fixes.",
+      "files": [
+        "skills/prompt-engineer/evals/fixtures/wall-of-text/SKILL.md"
+      ],
+      "expectations": [
+        "Отчёт содержит заголовок 'Prompt Engineer' или 'Prompt Engineer:'",
+        "Отчёт указывает на wall-of-text / отсутствие структурированных секций",
+        "Отчёт отмечает слабый description (нет trigger phrases, слишком короткий)",
+        "Отчёт отмечает отсутствие Scope или Output Requirements",
+        "Каждая major/critical находка содержит конкретный fix (стрелка → или явное предложение замены)",
+        "Отчёт содержит секцию 'Что хорошо' или перечисляет сильные стороны",
+        "Отчёт содержит буквенную оценку A, B, C или D"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "bad-description",
+      "prompt": "оптимизируй промпт — review agent skill .agents/skills/prompt-engineer/evals/fixtures/bad-description/SKILL.md. Нужен полный lint по prompt-engineer, пока без apply.",
+      "expected_output": "Отчёт находит description >400 chars с internals вместо triggers, лишние allowed-tools; при этом отмечает хорошие Scope/Gotchas/Output.",
+      "files": [
+        "skills/prompt-engineer/evals/fixtures/bad-description/SKILL.md"
+      ],
+      "expectations": [
+        "Отчёт содержит заголовок 'Prompt Engineer' или 'Prompt Engineer:'",
+        "Отчёт указывает description слишком длинный или описывает internals workflow",
+        "Отчёт отмечает отсутствие explicit trigger phrases в description",
+        "Отчёт упоминает allowed-tools bloat или лишние инструменты",
+        "Отчёт отмечает положительные элементы (Scope, Gotchas или Output Requirements присутствуют)",
+        "Отчёт содержит буквенную оценку A, B, C или D",
+        "Отчёт спрашивает или упоминает шаг 'Применить исправления' без автоматического apply"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "should-not-trigger-publish",
+      "prompt": "Опубликуй скилл `dummy-echo-helper` из `.tmp/dummy-skill-for-publish/` в Stash sandbox. Нужен push в PR, не lint.",
+      "expected_output": "Skill should NOT run prompt-engineer; redirect to avito-skill-publisher.",
+      "files": [],
+      "expectations": [
+        "Не запускает Prompt Engineer lint pipeline",
+        "Не выдаёт отчёт Critical/Major/Minor как основной deliverable",
+        "Рекомендует avito-skill-publisher или объясняет scope mismatch",
+        "Не анализирует SKILL.md по quality-guide как главную задачу"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "should-not-trigger-scaffold",
+      "prompt": "Создай болванку нового скилла `vault-daily-backup` — scaffold SKILL.md с community research, без публикации.",
+      "expected_output": "Skill should NOT run; redirect to skill-scaffold.",
+      "files": [],
+      "expectations": [
+        "Не выдаёт Prompt Engineer отчёт с оценкой A–D",
+        "Не запускает lint quality-guide для существующего файла",
+        "Рекомендует skill-scaffold для создания нового скилла",
+        "Не предлагает avito-skill-publisher как следующий шаг без запроса publish"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "missing-examples-preconditions",
+      "prompt": "review SKILL.md .agents/skills/prompt-engineer/evals/fixtures/missing-examples/SKILL.md — полный lint, без apply",
+      "expected_output": "Отчёт находит отсутствие ## Пример, ## Preconditions, Claude-only формулировки, зависимость от skill-creator; Skills Hub Quality table с ❌",
+      "files": [
+        "skills/prompt-engineer/evals/fixtures/missing-examples/SKILL.md"
+      ],
+      "expectations": [
+        "Отчёт содержит секцию Skills Hub Quality или таблицу с критериями examples/preconditions",
+        "Отчёт отмечает отсутствие примеров (examples ❌ или major finding)",
+        "Отчёт отмечает agent_agnostic или Claude-only формулировку",
+        "Отчёт отмечает self_containment или зависимость от другого скилла",
+        "Отчёт содержит буквенную оценку A, B, C или D"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "read-all-phases",
+      "trigger": true,
+      "prompt": "Проверь многошаговый скилл: шаги должны читаться по одному, в момент входа в шаг, а не все сразу. Файл: evals/fixtures/read-all-phases/SKILL.md. Полный отчёт prompt-engineer, файл не правь.",
+      "expected_output": "Major: скелет велит прочитать все phases/ и references/ до старта. Minor: phases/step-2.md достижим только через references/router.md. Minor: references/long-notes.md длиннее 100 строк и без оглавления. Короткий всегда-нужный шаг 1 в теле не предлагать выносить.",
+      "files": [
+        "skills/prompt-engineer/evals/fixtures/read-all-phases/SKILL.md",
+        "skills/prompt-engineer/evals/fixtures/read-all-phases/references/router.md",
+        "skills/prompt-engineer/evals/fixtures/read-all-phases/references/long-notes.md",
+        "skills/prompt-engineer/evals/fixtures/read-all-phases/phases/step-1.md",
+        "skills/prompt-engineer/evals/fixtures/read-all-phases/phases/step-2.md"
+      ],
+      "expectations": [
+        "report_header: отчёт с заголовком Prompt Engineer",
+        "major_preload: major на чтение всех phases/ или references/ до старта",
+        "minor_nested: minor, что phases/step-2.md не назван в SKILL.md и открывается через references/router.md",
+        "minor_toc: minor, что references/long-notes.md длиннее 100 строк и без оглавления вверху",
+        "keep_short_step: нет рекомендации вынести шаг 1 из тела",
+        "no_edit: исходный SKILL.md не изменён",
+        "grade: оценка не A, потому что есть major"
+      ]
+    }
+  ]
+}

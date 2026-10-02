@@ -1,6 +1,6 @@
 ---
 created: 2026-09-03
-updated: 2026-09-04
+updated: 2026-10-02
 ---
 
 # System Prompt Quality Guide
@@ -16,13 +16,13 @@ Rules for Rules + Anthropic skill-creator + publication DoD
 | # | Rule | Why |
 |---|------|-----|
 | 1 | Signal-to-noise | каждый токен меняет поведение |
-| 2 | Why over What | «X потому что Y» > MUST; CRITICAL только для safety |
+| 2 | Instruction + why | явная инструкция и короткое «зачем»; причина не заменяет шаг; CRITICAL только для safety |
 | 3 | Verifiable | completion check на каждую инструкцию |
 | 4 | Instructions first | static → dynamic (cache) |
 | 5 | Positive framing | «Do Y» > «Don't X» |
 | 6 | Graduated examples | 0/1/2-3/3-5 по сложности |
 | 7 | Scope clarity | in / out / fallback |
-| 8 | Progressive disclosure | core в body; conditional ≥30 строк → `references/` |
+| 8 | Progressive disclosure | в контексте текущий шаг; условное или ≥30 строк → файл; короткий всегда-нужный шаг остаётся в теле |
 | 9 | One delimiter | Markdown XOR XML |
 | 10 | Deterministic Offloading | Если есть жёсткая последовательность команд (CLI, парсинг), вынеси её в bash/python скрипт в `scripts/`. Не заставляй модель оркестрировать рутинные вызовы. |
 
@@ -162,7 +162,8 @@ Weights below are a local heuristic for the lint report.
 | Named failure modes | major (stateful) | есть ≥2 явных «failure mode = X → stop/fix»; иначе → добавить таблицу |
 | STOP before mutate/artifact | major | перед Write destructive / финальным артефактом есть STOP + wait user или script gate |
 | Escape hatch с partial resistance | minor | если есть skip/«просто сделай» – 1-й skip ≠ full abort критичных фаз |
-| Progressive disclosure | major | conditional ≥30 строк или phase>1 → `phases/`/`references/`; body = skeleton + «Read before execute» |
+| Progressive disclosure | major | Вынести ветку, если она условная или ≥30 строк. Шаги, которые выполняются всегда и вместе укладываются в 60–150 строк, остаются в теле. Вынесенный шаг в скелете: имя, путь, «прочитай сейчас, следующий файл не открывай». Major, если скелет велит прочитать все `phases/` или `references/` до старта |
+| Reference depth and TOC | minor | Каждый `phases/` и `references/` файл назван прямо в SKILL.md, не через другой reference. У файла длиннее 100 строк оглавление вверху |
 | Section / phase self-check | minor (multi-phase) | перед DONE – confirm Read нужных phase/section файлов |
 | Completion vocabulary | minor | `DONE` / `DONE_WITH_CONCERNS` / `BLOCKED` / `NEEDS_CONTEXT` вместо только «готово» |
 | One-question-per-turn (conversational) | major (diag/discovery) | не батчить forcing-вопросы; pipeline batch AskQuestion – OK |
@@ -176,7 +177,7 @@ Weights below are a local heuristic for the lint report.
 
 | Pattern | Fix |
 |---------|-----|
-| CoT / boilerplate / vague | sections / delete / measurable criteria |
+| CoT / boilerplate / vague | delete; не проси выписать рассуждение в ответ |
 | LLM-оркестрация рутины | заменить 3+ команды на вызов скрипта из `scripts/` |
 | negatives in body | positive rewrite |
 | mixed delimiters | one format |
@@ -186,7 +187,7 @@ Weights below are a local heuristic for the lint report.
 | missing DoD sections | add Hard Stop / DoD / Команды |
 | body >300 | extract to references |
 | IMPORTANT >3 | → Hard Stop Rules |
-| unconditional steps in references | keep in body (extra read cost) |
+| unconditional steps in references | см. Progressive disclosure: короткий всегда-нужный шаг в теле |
 | «сначала /skill-X» без fallback | self_containment: inline fallback или references |
 | нет примеров | добавить ## Пример с входом и результатом |
 | Claude-only / Codex-only | agent_agnostic: generic формулировка |
@@ -196,7 +197,11 @@ Weights below are a local heuristic for the lint report.
 | Recommend in prose and continue past STOP | STOP + tool AskQuestion / wait |
 | Skip validation because user said «оставь» | показать контекст → потом skip_all |
 | «Скилл завершён» без DoD/script exit 0 | completion status + verify |
-| Load all phases into context at start | Gatekeeper: Read one phase |
+| Load all phases into context at start | см. Progressive disclosure: один файл на входе в шаг |
+| Отказ «вне области скилла» в теле | негативный триггер только в description; в теле отказ по safety, правам или нехватке данных |
+| Один тяжёлый пайплайн без короткого пути | оставь лёгкий путь, если дефолт агента уже закрывает часть задачи |
+| Вложенная ссылка reference → reference | путь к файлу прямо в SKILL.md |
+| Reference >100 строк без оглавления | оглавление вверху файла |
 | Soft skip of premise/alternatives on «fully formed plan» | keep critical phases; skip only questioning |
 
 ---
