@@ -1,6 +1,6 @@
 ---
 created: 2026-09-03
-updated: 2026-10-02
+updated: 2026-10-21
 ---
 
 # System Prompt Quality Guide
@@ -16,7 +16,7 @@ Rules for Rules + Anthropic skill-creator + publication DoD
 | # | Rule | Why |
 |---|------|-----|
 | 1 | Signal-to-noise | каждый токен меняет поведение |
-| 2 | Instruction + why | явная инструкция и короткое «зачем»; причина не заменяет шаг; CRITICAL только для safety |
+| 2 | Instruction + why | явная инструкция и одно короткое «зачем»; причина не заменяет шаг; не перечисление кейсов; CRITICAL только для safety |
 | 3 | Verifiable | completion check на каждую инструкцию |
 | 4 | Instructions first | static → dynamic (cache) |
 | 5 | Positive framing | «Do Y» > «Don't X» |
@@ -31,10 +31,17 @@ Rules for Rules + Anthropic skill-creator + publication DoD
 | Remove | → |
 |--------|---|
 | please, make sure to, CoT phrases | delete |
+| «думай глубже», «продумай все кейсы», adaptive-depth, «рассмотри все варианты» | delete |
 | prose lists | bullets/tables |
 | passive voice | imperative |
 | ALL CAPS | `**bold**` |
 | цепочка 3+ shell-вызовов в Алгоритме | скрипт `scripts/script.sh` и один вызов |
+
+## Evidence boundary
+
+Замер краткости (Habr 1096770, GLM-5.3 Max, короткие ответы) не требует вставку «as few words as possible» в SKILL.md.
+«Думай глубже» и меню без выбора вредны. «Одним словом» на процедуру тоже.
+Краткость в скилле – сжатие инструкции и одно решение, не артефакт в 8 слов.
 
 ---
 
@@ -167,7 +174,7 @@ Weights below are a local heuristic for the lint report.
 | Section / phase self-check | minor (multi-phase) | перед DONE – confirm Read нужных phase/section файлов |
 | Completion vocabulary | minor | `DONE` / `DONE_WITH_CONCERNS` / `BLOCKED` / `NEEDS_CONTEXT` вместо только «готово» |
 | One-question-per-turn (conversational) | major (diag/discovery) | не батчить forcing-вопросы; pipeline batch AskQuestion – OK |
-| Mandatory alternatives before big rec | major (design/strategy) | ≥2 подхода + явный выбор до финального doc |
+| Commit one path | major (design/strategy) | один выбранный путь и допущение в одной строке. Второй путь – только если он меняет артефакт и выбор ещё не сделан. Список без выбора = major (хедж) |
 | Behavioral exemplars | minor | BAD/GOOD или anti-sycophancy на ключевых развилках (не обязательно для pipeline) |
 | Mechanical DoD where possible | major | жёсткие CLI-цепочки → `scripts/` + exit-code gate (Principle 10; связать с failure modes) |
 
@@ -178,6 +185,11 @@ Weights below are a local heuristic for the lint report.
 | Pattern | Fix |
 |---------|-----|
 | CoT / boilerplate / vague | delete; не проси выписать рассуждение в ответ |
+| «думай глубже» / «продумай все кейсы» / adaptive-depth / «рассмотри все варианты» | delete |
+| краткость + перебор кейсов в одной инструкции | оставь одно: короткий ответ или перебор; связка топит оба |
+| «одним словом» / «as few words as possible» на скилл, протокол, план, заметку | краткость – про решение в чате, не про сжатие процедуры |
+| триггер краткости на другом языке, чем тело | язык триггера = язык инструкции |
+| список подходов без выбора | один путь + допущение в одной строке |
 | LLM-оркестрация рутины | заменить 3+ команды на вызов скрипта из `scripts/` |
 | negatives in body | positive rewrite |
 | mixed delimiters | one format |

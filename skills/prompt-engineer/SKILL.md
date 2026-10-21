@@ -8,10 +8,10 @@ description: >
 metadata:
   scope: public
   author: eplosev
-  version: "1.2.4"
+  version: "1.2.5"
   tags: "skill-dev,prompt-engineering,lint"
 created: 2026-09-03
-updated: 2026-10-02
+updated: 2026-10-21
 user-invocable: true
 ---
 
