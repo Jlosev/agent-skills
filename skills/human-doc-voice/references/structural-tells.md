@@ -1,6 +1,6 @@
 ---
 created: 2026-09-04
-updated: 2026-09-23
+updated: 2026-10-29
 intent: structural AI tells for the apply pass
 keywords: stop-slop, structures, rule-of-three, antithesis, rhythm
 type: spec
@@ -8,7 +8,7 @@ type: spec
 
 # Structural tells – detect-only
 
-Condensed from [hardikpandya/stop-slop `references/structures.md`](https://github.com/hardikpandya/stop-slop/blob/main/references/structures.md). Scan hints for the apply pass. Not an approval gate.
+Scan hints for the apply pass. Not an approval gate. The patterns below are the ones also described in [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing).
 
 Frequency thresholds for antithesis and linkers – SKILL §6 + `scripts/tics.py`. This file covers structure and rhythm, not lexicon.
 
@@ -16,7 +16,10 @@ Frequency thresholds for antithesis and linkers – SKILL §6 + `scripts/tics.py
 
 | Upstream rule | Why we skip it |
 | --- | --- |
-| Ban em dash; «no em dashes at all» | Prose may use en dash «–» (U+2013); em dash (U+2014) – no |
+| Ban em dash; «no em dashes at all» | Prose may use en dash «–» (U+2013); em dash (U+2014) – no. Wiki moved em-dash overuse to historical in September 2026 |
+| Ban en dash | Project typography uses «–» |
+| Cut the text to a word quota (half, 55%) | Compression test only. No length target |
+| Strip modality («может», «возможно») | Modality is a fact |
 | Kill all adverbs (-ly, really, just…) | Too broad; cut only empty emphasis in slop context |
 | Reader in the room / «you» / personality | Do not import blog «you» or a personality. Imperative only when the text is an instruction to that reader. Otherwise name who acts |
 | Narrator-from-a-distance → «put reader in the seat» | Do not shift a reference text into direct address |
@@ -33,8 +36,10 @@ Flag when the contrast is **formulaic**, not informative:
 | It's not this. It's that. / isn't X, it's Y | Mechanical contrast |
 | not just X but also Y | Additive hedge |
 | Negative listing: Not A… Not B… Z. | «Striptease» through negations |
+| Y rather than X | «скорее A, чем B», «should be treated as X rather than Y» when the contrast is not the point (live, 2026) |
+| Link without the relation | «связан с» / associated with, and the sentence never says who does what |
 
-**Fix (after «ok»):** state Y directly; keep antithesis only where contrast is the point (see `tics.py` threshold >3).
+**Fix:** state Y directly; keep antithesis only where contrast is the point (see `tics.py` threshold >3). Do not ban «связан с».
 
 ## Rule of three
 
@@ -50,7 +55,7 @@ Flag when the contrast is **formulaic**, not informative:
 
 | Pattern | Flag when |
 | --- | --- |
-| All sentences ~same length (mid band) | No short and long mix – generator cadence |
+| All sentences ~same length (mid band) | No short and long mix – generator cadence. Live 2026 band is about 8–20 words, with only commas and periods. Eye hint. Do not scan: a Russian word count is a false positive |
 | Every paragraph: fact → moral of same length | Same rhythm across sections (SKILL §5 tics) |
 | Every list item ends with a punch | Performative punchline |
 | Series of dramatic fragments | Then X arrived. No Y. No Z. – manufactured profundity |

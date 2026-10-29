@@ -9,10 +9,10 @@ description: >
 metadata:
   scope: public
   author: Jlosev
-  version: "1.7.0"
+  version: "1.8.0"
   tags: "human-doc,readability,dedup,slop"
 created: 2026-07-28
-updated: 2026-09-23
+updated: 2026-10-29
 user-invocable: true
 argument-hint: "[path]"
 allowed-tools: Read, Edit, Write, Bash
@@ -80,6 +80,10 @@ Name who acts. Imperative «you» only when the text is an instruction to that r
 | Dash or colon instead of a conjunction | «Если она не пустая – учтите объём» | «Если она не пустая, учтите объём» |
 | Nominalization instead of a verb | «это вход в расчёт на шаге 5» | «понадобится на шаге 5» |
 | Root repeated in one phrase | «домен скрывает объекты без домена» | «фильтр домена отбрасывает объекты без разметки» |
+| Link without the relation | «сервис связан с расчётом дельты» | «калькулятор переводит дельту в серверные единицы» |
+| Human verb on a system | «платформа обещает обработать за 24 часа» | «обработка занимает 24 часа» |
+
+«Связан с», «ассоциирован», «в связи с» stay when the relation is real («контракт связан с биллингом»). A human verb on a system («обещает», «не видит», «умеет») names nothing that happens. A machine verb («считает», «пишет», «отправляет») stays.
 
 Read-aloud test: if you stumble, a conjunction is missing or the subject is hidden.
 
@@ -87,7 +91,7 @@ Read-aloud test: if you stumble, a conjunction is missing or the subject is hidd
 
 Modality, a part of a number (year, unit), negation, scope, and a list stay as in the source. «Пробуем» does not become «делаем». Silence in the source stays silence.
 
-Do not invent an owner, a date, or a decision. Mark the gap in the text, short and in place.
+Do not invent an owner, a date, or a decision. Mark the gap in one short clause, in place. Not a disclaimer paragraph («в доступных источниках не установлено… скорее всего… читать как A, а не как B») and not a guess in the gap.
 
 An evaluative word only next to a fact. Do not rename a metric. Example, not a special section: a share of 4–5 ratings is not NPS unless that is the instrument.
 
@@ -144,6 +148,7 @@ Before the report, find and fix:
 - a sentence that would fit a document about another system, unchanged
 - a sentence that holds by rhythm and has no fact
 - a verb that needs a human subject, with no human there
+- a human verb on a system («обещает», «не видит») where a machine verb or a plain fact would do
 
 ### 8. Surfaces
 
@@ -169,7 +174,7 @@ A line with nothing to say is omitted. Do not narrate the steps.
 ## Hard Stop Rules
 
 - Do not upgrade modality, drop part of a number, flip a negation, or widen a scope.
-- Do not invent an owner, a date, or a decision. Mark the gap.
+- Do not invent an owner, a date, or a decision. Mark the gap in one short clause. No disclaimer paragraph, no guess.
 - Dedup leaves the fact in exactly one place, not zero. Cuts are listed in «Не вошло».
 - Do not copy this contract into `.mdc` or other files.
 - Do not publish. A project publish rule is separate.
@@ -210,6 +215,14 @@ Examples of the checks, not a required document type.
 > На шаге 5 калькулятор переводит дельту в серверные единицы.
 
 **Report.** короче на треть. не вошло: повтор про шаг 5. спорное: нет.
+
+**In.** A link with no relation, then a disclaimer that fills the gap:
+
+> Сервис связан с расчётом дельты. В доступных источниках срок не установлен, скорее всего обработка занимает около суток, и это следует читать как ориентир, а не как обязательство.
+
+**Out.** The relation is named. The gap is one clause. The guess is gone:
+
+> Калькулятор переводит дельту в серверные единицы. Срок обработки не назван.
 
 ## Gotchas
 
