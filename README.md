@@ -1,9 +1,3 @@
----
----
-created: 2026-09-15
-updated: 2026-09-28
----
-
 # agent-skills
 
 Personal portable agent skills.
