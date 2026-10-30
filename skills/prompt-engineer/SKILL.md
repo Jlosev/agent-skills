@@ -3,15 +3,14 @@ name: prompt-engineer
 description: >
   Lint and review agent instruction files (SKILL.md, agent.md, CLAUDE.md, protocol) for executability.
   Triggers prompt-engineer, lint skill, review SKILL.md, Publication DoD, quality checklist, agent instructions review.
-  Checks triggers, progressive disclosure, Hard Stop, DoD, deterministic script offload per quality-guide.
   Not for scaffolding a new skill from scratch, chat-prompt optimization, or model-specific prompt research.
 metadata:
   scope: public
   author: eplosev
-  version: "1.2.5"
+  version: "1.2.6"
   tags: "skill-dev,prompt-engineering,lint"
 created: 2026-09-03
-updated: 2026-10-21
+updated: 2026-10-30
 user-invocable: true
 ---
 
@@ -65,6 +64,8 @@ Metrics script:
 Description metrics: character length, `:` check, trigger phrases, negative triggers – per DoD §Discovery.
 
 Also: compression, anti-patterns table, token estimate (words×1.3), extraction (conditional ≥30 lines → `references/`).
+
+`description_chars` из скрипта: `major` (>400) или `critical` (>1024) – та же severity в отчёте.
 
 `missing_deps` из скрипта → major: файл из `references/`, `scripts/` или `phases/` назван, но его нет. Оценщик Hub видит только тело SKILL.md, поэтому в теле остаётся сам шаг, в файл уходит длинная процедура.
 
