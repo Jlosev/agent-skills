@@ -71,6 +71,11 @@ def esc_text(s: object) -> str:
     return html.escape(str(s))
 
 
+def raw_html(markup: str) -> str:
+    """Intentionally unescaped markup: only pass HTML already built by this module (children, static SVG)."""
+    return markup
+
+
 # Shared non-color tokens (identical in light/dark)
 _THEME_SCALE = """
   --font-h1-size: 24px;
@@ -529,7 +534,7 @@ def bar_chart(
             )
             lab = format_value(val)
             parts.append(
-                f'<text x="{pad_l - 8}" y="{y + 3.5:.1f}" text-anchor="end">{lab}</text>'
+                f'<text x="{pad_l - 8}" y="{y + 3.5:.1f}" text-anchor="end">{esc_text(lab)}</text>'
             )
 
         for rl in reference_lines:
@@ -695,26 +700,27 @@ def callout_icon_svg(tone: str) -> str:
     if tone == "neutral":
         return ""
     glyph = _TONE_ICON.get(tone, "info")
-    paths = _CALLOUT_ICONS[glyph]
-    color = f"var(--tone-{tone})"
+    paths = _CALLOUT_ICONS[glyph]  # trusted static SVG markup from this module
+    color = esc(f"var(--tone-{tone})")
     return (
         f'<svg class="callout-icon" viewBox="0 0 18 18" width="18" height="18" '
-        f'aria-hidden="true" style="color:{color}">{paths}</svg>'
+        f'aria-hidden="true" style="color:{color}">{raw_html(paths)}</svg>'
     )
 
 
 def callout(tone: str, inner: str) -> str:
+    # inner is intentionally raw markup: child HTML already rendered by this module's helpers
     icon = callout_icon_svg(tone)
     return (
-        f'<div class="callout callout--{tone}">'
+        f'<div class="callout callout--{esc(tone)}">'
         f"{icon}"
-        f'<div class="callout-body stack" style="--stack-gap:4px">{inner}</div>'
+        f'<div class="callout-body stack" style="--stack-gap:4px">{raw_html(inner)}</div>'
         f"</div>"
     )
 
 
 def stat(label: str, value: object, tone: str | None = None) -> str:
-    cls = f"stat stat--{tone}" if tone else "stat"
+    cls = f"stat stat--{esc(tone)}" if tone else "stat"
     return (
         f'<div class="{cls}"><div class="stat-value">{esc_text(value)}</div>'
         f'<div class="stat-label">{esc_text(label)}</div></div>'
@@ -743,9 +749,10 @@ def text_semibold(text: str, size: str | None = None) -> str:
 
 def card(header: str, body: str, flex: bool = False) -> str:
     cls = "card card--flex" if flex else "card"
+    # body is intentionally raw markup: child HTML already rendered by this module's helpers
     return (
         f'<section class="{cls}"><header class="card-header">{esc_text(header)}</header>'
-        f'<div class="card-body">{body}</div></section>'
+        f'<div class="card-body">{raw_html(body)}</div></section>'
     )
 
 
@@ -753,11 +760,12 @@ def table(headers: list[str], rows: list[list[str]]) -> str:
     th = "".join(f"<th>{esc_text(h)}</th>" for h in headers)
     trs = []
     for row in rows:
-        tds = "".join(f"<td>{esc_text(c)}</td>" for c in row)
-        trs.append(f"<tr>{tds}</tr>")
+        tds = "".join(f"<td>{esc_text(c)}</td>" for c in row)  # cells escaped here
+        trs.append(f"<tr>{raw_html(tds)}</tr>")
+    tbody = "".join(trs)
     return (
-        f'<table class="table"><thead><tr>{th}</tr></thead>'
-        f'<tbody>{"".join(trs)}</tbody></table>'
+        f'<table class="table"><thead><tr>{raw_html(th)}</tr></thead>'
+        f'<tbody>{raw_html(tbody)}</tbody></table>'
     )
 
 

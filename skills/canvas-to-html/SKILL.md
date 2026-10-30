@@ -2,7 +2,7 @@
 name: canvas-to-html
 description: Export one Cursor Canvas (.canvas.tsx) to a standalone static directory (index.html + local CSS/JS). Triggers canvas-to-html, export canvas to html, canvas static export.
 created: 2026-09-03
-updated: 2026-09-05
+updated: 2026-10-30
 ---
 
 # Canvas to HTML
