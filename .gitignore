@@ -6,3 +6,6 @@ node_modules/
 .tmp/
 *.pyc
 __pycache__/
+
+# Прогоны оценки скиллов – вне репозитория (~/Projects/jlosev-agent-skills-evals)
+*-workspace/
