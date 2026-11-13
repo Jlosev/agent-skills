@@ -99,7 +99,7 @@ The dispatch is the same in every harness: one isolated read-only subagent on Op
 }
 ```
 
-5. **Hard Stop** – do not go to execution until Task returned a structured report.
+5. **Hard Stop** – do not go to execution until the subagent returned a structured report.
 
 ### Step 3: Apply criticism
 
@@ -130,7 +130,7 @@ The dispatch is the same in every harness: one isolated read-only subagent on Op
 ## Hard Stop Rules
 
 - **No silent run** – no dispatch without yes, an explicit phrase or a project rule (Step 1b).
-- **No inline critique** – parent does not score the artifact; only `Task` with `{SKILL_DIR}/agents/critic.md`.
+- **No inline critique** – parent does not score the artifact; only the harness subagent (§Harness) with `{SKILL_DIR}/agents/critic.md`.
 - **No `{ORIGINAL_REQUEST}` in the prompt** – stop.
 - **Critical or ≥3 Important without edits** – stop handoff.
 - **Verdict REVISE** – stop handoff until a re-round or explicit user ack.

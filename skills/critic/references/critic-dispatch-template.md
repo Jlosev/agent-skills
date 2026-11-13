@@ -9,7 +9,7 @@ metadata:
 
 # Critic dispatch template
 
-The orchestrator fills placeholders and passes **the entire block** as the `prompt` in `Task`.
+The orchestrator fills placeholders and passes **the entire block** as the `prompt` of the subagent call (`SKILL.md` §Harness).
 
 ---
 
