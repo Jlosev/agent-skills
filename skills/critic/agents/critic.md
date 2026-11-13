@@ -54,7 +54,7 @@ In: prompt с `{ORIGINAL_REQUEST}`, `{ARTIFACT_TYPE}`, `{ARTIFACT_PATH}`, `{GOAL
 - Conciseness – лови воду и повторы одного тезиса разными формулировками; suggested fix = что вырезать/сжать, не «переписать всё».
 - Line refs – `L<N>` для markdown или `§<заголовок секции>`.
 - Пустой `{ARTIFACT_CONTENT}` – Critical «артефакт непригоден»; для `cursor-plan` – проверь полноту snapshot.
-- Оркестратор обязан перед `Task` прочитать `model` из frontmatter и передать в параметр `model`. Канон критика – `claude-opus-5-5-high`.
+- Оркестратор передаёт модель Opus своего харнесса (`SKILL.md` §Harness): в Cursor – `model` из этого frontmatter (`claude-opus-5-5-high`), в Claude Code – `opus`.
 
 ## Definition of Done
 

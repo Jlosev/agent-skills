@@ -7,10 +7,10 @@ description: >
 metadata:
   scope: public
   author: Jlosev
-  version: "2.0.3"
+  version: "2.1.0"
   tags: "{critic,orchestrator,review,research,planning}"
 created: 2026-07-08
-updated: 2026-09-28
+updated: 2026-11-13
 user-invocable: true
 ---
 
@@ -41,7 +41,7 @@ Fallback: no Task/subagent – Hard Stop, do not proceed to the action
 - The subagent **does not see** chat history – pass `{ORIGINAL_REQUEST}`, `{ARTIFACT_CONTENT}`, `{GOAL_FROM_ARTIFACT}` in the prompt (`references/critic-dispatch-template.md`).
 - Do not mix with PR/diff review or an incident-RCA critic.
 - Cursor Plan Mode often **does not** save a file – a full-text snapshot in `{ARTIFACT_CONTENT}` is required.
-- **Critic model is Opus 5.5.** Before `Task` read `model` from `{SKILL_DIR}/agents/critic.md` and pass it. Do not substitute a cheap default.
+- **Critic model is Opus 5.5.** Pass the model id for your harness (§Harness). Do not substitute a cheap default.
 - A critique phase inside another research skill ≠ this skill.
 - **Do not patch** producer skills just to add a gate.
 - For `research-conclusion`: unread source listed in Open Questions + an immediate action with owner/deadline/DoD may be **Accepted residual** in round ≥2.
@@ -49,6 +49,16 @@ Fallback: no Task/subagent – Hard Stop, do not proceed to the action
 - **Anti-water:** on Conciseness findings the orchestrator **cuts/compresses**; suggested fix = what to delete.
 - **Environment facts – orchestrator, not user:** paths, file existence, configs, tool/MCP availability, source URLs – verify via Read/`Glob`/MCP/search before dispatch or while applying findings. Do not ask the user «does X exist?» / «is Y available?». Ask only when `{ORIGINAL_REQUEST}` is lost or a product/policy choice cannot be inferred from the artifact and environment.
 - **Residual QN ≠ grill-me:** after review, user QN is only for residual Important that cannot close via edit or environment check; format Step 3b. No design-tree or interview loop over the whole plan.
+
+## Harness
+
+The dispatch is the same in every harness: one isolated read-only subagent on Opus, prompt = body of `{SKILL_DIR}/agents/critic.md` + filled dispatch template.
+
+| Harness | Tool | `model` | Read-only |
+|---|---|---|---|
+| Cursor | `Task`, `subagent_type: "generalPurpose"` | `model` from `agents/critic.md` frontmatter (`claude-opus-5-5-high`) | `readonly: true` |
+| Claude Code | `Agent`, `subagent_type: "general-purpose"` | `"opus"` (Cursor ids fail with `unrecognized_model`) | state in the prompt: no edits, no commits |
+| Other | its subagent tool | its Opus alias | its read-only flag or the prompt |
 
 ## Algorithm
 
@@ -65,17 +75,18 @@ Fallback: no Task/subagent – Hard Stop, do not proceed to the action
 
 1. **Explicit phrase** = consent → Step 2.
 2. **Yes** on a reminder ASK = consent → Step 2.
-3. Else **ask once**: run critic for `{ARTIFACT_PATH}` (`{ARTIFACT_TYPE}`)?
-4. **No** → do not dispatch; finish without critique (not a Hard Stop).
+3. **Project rule** (`AGENTS.md` or a process doc it routes to) that explicitly requires `critic` for this artifact = consent → Step 2.
+4. Else **ask once**: run critic for `{ARTIFACT_PATH}` (`{ARTIFACT_TYPE}`)?
+5. **No** → do not dispatch; finish without critique (not a Hard Stop).
 
 ### Step 2: Dispatch the isolated critic
 
 **Isolated Opus critique only** – no interview prompts, design-tree, or user QN in the subagent prompt. The subagent returns a structured report; user clarifications belong to the orchestrator (Step 3b).
 
-1. Read `{SKILL_DIR}/agents/critic.md` – take `model` from frontmatter (canon – `claude-opus-5-5-high`).
+1. Read `{SKILL_DIR}/agents/critic.md`; take the model for your harness from §Harness.
 2. Before dispatch: gather environment facts needed for critique (files, tools, URLs) yourself – do not ask the user.
 3. Fill `{SKILL_DIR}/references/critic-dispatch-template.md`.
-4. Call **only** via `Task`:
+4. Call **only** via the subagent tool of your harness (§Harness). Cursor:
 
 ```json
 {
@@ -118,22 +129,22 @@ Fallback: no Task/subagent – Hard Stop, do not proceed to the action
 
 ## Hard Stop Rules
 
-- **No silent run** – no `Task` without yes / an explicit phrase.
+- **No silent run** – no dispatch without yes, an explicit phrase or a project rule (Step 1b).
 - **No inline critique** – parent does not score the artifact; only `Task` with `{SKILL_DIR}/agents/critic.md`.
 - **No `{ORIGINAL_REQUEST}` in the prompt** – stop.
 - **Critical or ≥3 Important without edits** – stop handoff.
 - **Verdict REVISE** – stop handoff until a re-round or explicit user ack.
 - **>3 rounds with repeating Critical** – stop, escalate.
 - **Empty or truncated `{ARTIFACT_CONTENT}`** – stop; snapshot Plan Mode first.
-- **`model`** – only from the agent frontmatter (`claude-opus-5-5-high`).
+- **`model`** – Opus for your harness (§Harness); never a cheaper default.
 - **No environment QN to the user** – fs/tools/URLs are gathered by the orchestrator; QN only via Step 3b (residual policy/trade-off) with WAIT.
 - **No grill-me / design-tree in Step 2–3** – subagent does not run interviews; orchestrator does not survey the whole plan.
 
 ## Definition of Done
 
 - [ ] Artifact fixed (file or full snapshot) with `{ARTIFACT_TYPE}`
-- [ ] Consent received (phrase or yes)
-- [ ] Critic called via `Task` on Opus 5.5, not inline
+- [ ] Consent received (phrase, yes or project rule)
+- [ ] Critic called via the harness subagent tool on Opus 5.5 (§Harness), not inline
 - [ ] Structured report received
 - [ ] All Critical/Important handled (fixed, verified via environment, or closed via QN + user answer)
 - [ ] Residual Important needing user decision formatted as QN + Recommended; handoff only after answer or explicit ack
