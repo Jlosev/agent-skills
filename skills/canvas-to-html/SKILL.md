@@ -1,6 +1,10 @@
 ---
 name: canvas-to-html
-description: Export one Cursor Canvas (.canvas.tsx) to a standalone static directory (index.html + local CSS/JS). Triggers canvas-to-html, export canvas to html, canvas static export.
+description: Export one Cursor Canvas (.canvas.tsx) to a standalone static directory (index.html + local CSS/JS). Trigger phrases canvas-to-html, export canvas to html, canvas static export. Not for editing or creating a canvas, CMS publish, or interactive exports that need the Cursor runtime.
+metadata:
+  scope: public
+  author: Jlosev
+  version: "1.0.1"
 created: 2026-09-03
 updated: 2026-11-15
 ---
