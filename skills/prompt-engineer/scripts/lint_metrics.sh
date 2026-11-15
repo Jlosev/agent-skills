@@ -10,6 +10,8 @@ echo "sections:"
 grep -E '^## (Hard Stop Rules|Definition of Done|Команды проверки|Check commands|Scope|Gotchas|Алгоритм|Algorithm|Пример|Example|Examples|Preconditions|Предусловия)' "$FILE" || true
 echo "agent_specific: $(grep -ciE 'Claude Code|Codex only|Cursor only|/skill-creator' "$FILE" 2>/dev/null || true)"
 echo "skill_deps: $(grep -ciE 'сначала (вызови|запусти|используй).*(skill|/skill-)' "$FILE" 2>/dev/null || true)"
+# Phrases skills.sh security audits flag: privilege escalation, bypassing user review, installing third-party skills.
+echo "audit_tells: $(grep -ciE 'full permission|elevated permission|\bsudo\b|no approval|(do not|don.t) (wait|stop) for (approval|ok)|without (asking|approval)|npx skills add [a-z0-9_.-]+/|вне песочницы|полными правами|не жди (подтверждения|«?ок)' "$FILE" 2>/dev/null || true)"
 echo "has_example_section: $(grep -cE '^## Пример|^## Example|^## Examples' "$FILE" 2>/dev/null || true)"
 echo "has_preconditions: $(grep -cE '^## Preconditions|^## Предусловия' "$FILE" 2>/dev/null || true)"
 python3 - "$FILE" <<'PY'
