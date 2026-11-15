@@ -13,7 +13,7 @@
 | Command mode | Voice-driven text editing |
 | Cross-device sync | Same dictation profile on phone + desktop |
 
-3. Спроси пользователя: какие jobs **must** vs **nice**?
+3. Stake – спроси пользователя, какие jobs **must** и **nice**. Small pick – размечай сам и пиши в бриф одной строкой.
 4. Запиши **out of scope** — что пользователю не нужно (экономит scan).
 
 ## Idea decompose (если описана идея, без бренда)
