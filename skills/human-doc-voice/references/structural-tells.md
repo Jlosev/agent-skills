@@ -8,7 +8,7 @@ type: spec
 
 # Structural tells – detect-only
 
-Scan hints for the apply pass. Not an approval gate. The patterns below are the ones also described in [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing).
+Scan hints for the apply pass. The patterns below are the ones also described in [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing).
 
 Frequency thresholds for antithesis and linkers – SKILL §6 + `scripts/tics.py`. This file covers structure and rhythm, not lexicon.
 

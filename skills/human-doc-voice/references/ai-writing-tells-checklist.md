@@ -8,7 +8,7 @@ type: spec
 
 # AI-writing tells – compact checklist
 
-Scan hints for the apply pass. Fix a hit in the same pass. Do not treat this file as an approval gate.
+Scan hints for the apply pass. Fix a hit in the same pass.
 
 **Source:** [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (WikiProject AI Cleanup), checked 2026-10-29. Russian marker lines: [Википедия:Признаки сгенерированности текста](https://ru.wikipedia.org/wiki/Википедия:Признаки_сгенерированности_текста). The Russian page lags. What counts as live follows the English page.
 
