@@ -1,0 +1,437 @@
+#!/usr/bin/env python3
+"""herdr-forks: keep personal clones of Herdr's shipped mods and layouts current.
+
+A clone (`mod.clone` / `layout.clone`) records `cloned_from: {name, version}`.
+Herdr never updates clones, so after an app update they lag behind. This tool
+does a three-way merge per file:
+
+  base   = the shipped file at the version the clone was made from or last
+           merged with (downloaded from github.com/herdrdev/herdr-app by tag,
+           cached in ~/.cache/herdr-forks)
+  ours   = the clone as it is now
+  theirs = the shipped file installed now (~/.config/herdr-app/mods/<name>)
+
+Clean merge: the clone gets upstream changes, keeps its own, and its
+`cloned_from.version` moves to the installed version. Any conflict: the clone
+is left untouched and the merged text with conflict markers is saved for review.
+A layout clone is updated only when it differs from upstream by mod names alone.
+
+  herdr-forks status          exit 0: all current, 1: something to do
+  herdr-forks update [-n] [name ...]
+                              -n: dry run. Touches no clone, but it does write conflict
+                              files (~/.cache/herdr-forks/conflicts/) and the base cache
+                              (~/.cache/herdr-forks/v<version>/)
+  herdr-forks diff <clone>    unified diff of the shipped base (at the clone's own
+                              cloned_from.version, renamed the way a merge renames it)
+                              against the clone: what is custom in it
+"""
+
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+import urllib.error
+import urllib.request
+import difflib
+from pathlib import Path
+
+HOME = Path(os.environ.get("HERDR_APP_HOME", Path.home() / ".config/herdr-app"))
+CACHE = Path(os.environ.get("HERDR_FORKS_CACHE", Path.home() / ".cache/herdr-forks"))
+RAW = "https://raw.githubusercontent.com/herdrdev/herdr-app/v{ver}/defaults/{path}"
+SKIP = {"jsconfig.json"}
+
+
+def vtuple(v):
+    return tuple(int(x) for x in re.findall(r"\d+", v or "0"))
+
+
+def app_version():
+    try:
+        out = subprocess.run(["herdr-app", "--version"], capture_output=True, text=True, timeout=10).stdout
+        m = re.search(r"\d+\.\d+\.\d+", out)
+        if m:
+            return m.group(0)
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+    try:
+        return json.loads((HOME / "update-notes.json").read_text())["last_run"]
+    except (OSError, ValueError, KeyError):
+        return None
+
+
+class FetchErr(Exception):
+    pass
+
+
+def fetch_base(ver, path):
+    """Shipped file `path` (relative to defaults/) at tag v<ver>; None if absent there."""
+    cached = CACHE / f"v{ver}" / path
+    missing = cached.with_name(cached.name + ".missing")
+    if cached.exists():
+        return cached.read_bytes()
+    if missing.exists():
+        return None
+    url = RAW.format(ver=ver, path=path)
+    try:
+        with urllib.request.urlopen(url, timeout=20) as r:
+            data = r.read()
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            missing.parent.mkdir(parents=True, exist_ok=True)
+            missing.touch()
+            return None
+        raise FetchErr(f"{url}: HTTP {e.code}")
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        raise FetchErr(f"{url}: {getattr(e, 'reason', e)}")
+    cached.parent.mkdir(parents=True, exist_ok=True)
+    cached.write_bytes(data)
+    return data
+
+
+def rename(text, name, clone):
+    """What mod.clone does to a mod's own references: asset paths and self-opening overlays."""
+    text = text.replace(f"mods/{name}/", f"mods/{clone}/")
+    return re.sub(r'(\bmod"?\s*:\s*")' + re.escape(name) + r'"', lambda m: m.group(1) + clone + '"', text)
+
+
+def rename_bytes(data, name, clone):
+    """rename() on file bytes; (data, False), or (data unchanged, True) for a binary file."""
+    if data is None:
+        return None, False
+    try:
+        return rename(data.decode(), name, clone).encode(), False
+    except UnicodeDecodeError:
+        return data, True
+
+
+def merge3(ours, base, theirs):
+    """git merge-file; returns (text, conflicts)."""
+    with tempfile.TemporaryDirectory() as d:
+        paths = []
+        for n, b in (("ours", ours), ("base", base), ("theirs", theirs)):
+            p = Path(d) / n
+            p.write_bytes(b)
+            paths.append(str(p))
+        try:
+            r = subprocess.run(["git", "merge-file", "-p", "-L", "clone", "-L", "base", "-L", "shipped", *paths],
+                               capture_output=True)
+        except FileNotFoundError:
+            sys.exit("git is required for merging (git merge-file) but was not found on PATH")
+        if r.returncode < 0 or r.returncode > 127:
+            raise RuntimeError(r.stderr.decode())
+        return r.stdout, r.returncode
+
+
+def forks():
+    out = []
+    files = [("mod", mj.parent.name, mj) for mj in sorted((HOME / "mods").glob("*/mod.json"))]
+    files += [("layout", lj.stem, lj) for lj in sorted((HOME / "layouts").glob("*.json"))]
+    for kind, clone, f in files:
+        try:
+            cf = json.loads(f.read_text()).get("cloned_from")
+        except (OSError, ValueError, AttributeError):
+            continue
+        if not cf:
+            continue
+        if not isinstance(cf, dict) or not cf.get("name") or not cf.get("version"):
+            print(f"note: {kind} {clone}: cloned_from lacks name or version, skipped", file=sys.stderr)
+            continue
+        out.append((kind, clone, cf["name"], cf["version"]))
+    return out
+
+
+def plan_mod(clone, name, base_ver):
+    """Merged files for a mod clone: ({file: bytes or None to delete}, [conflicted files], [notes])."""
+    cdir, sdir = HOME / "mods" / clone, HOME / "mods" / name
+    if not sdir.is_dir():
+        return {}, [], [f"shipped mod {name} no longer exists, clone left as is"]
+    files = sorted({p.relative_to(cdir).as_posix() for p in cdir.rglob("*") if p.is_file()}
+                   | {p.relative_to(sdir).as_posix() for p in sdir.rglob("*") if p.is_file()})
+    files = [f for f in files if f not in SKIP and not f.endswith(".d.ts") and not f.startswith(".")]
+    result, conflicts, notes = {}, [], []
+    for f in files:
+        o = (cdir / f).read_bytes() if (cdir / f).exists() else None
+        t = (sdir / f).read_bytes() if (sdir / f).exists() else None
+        b = fetch_base(base_ver, f"mods/{name}/{f}")
+        if f == "mod.json":
+            result[f] = merge_modjson(o, b, t)
+            continue
+        t, bin_t = rename_bytes(t, name, clone)
+        b, bin_b = rename_bytes(b, name, clone)
+        bin_o = False
+        if o is not None:
+            try:
+                o.decode()
+            except UnicodeDecodeError:
+                bin_o = True
+        if (bin_t or bin_b or bin_o) and None not in (o, b, t):
+            if o == b:
+                if t != o:
+                    result[f] = t
+            elif t != b:
+                conflicts.append((f, t, None))
+            continue
+        if o is None:
+            if t is not None and b is None:
+                result[f] = t  # new upstream file
+            continue  # deleted in the clone on purpose: keep it deleted
+        if t is None:
+            if b is not None and o == b:
+                result[f] = None  # upstream dropped it, the clone never touched it
+            elif b is not None:
+                notes.append(f"{f}: removed in the shipped version but edited in the clone, kept")
+            continue
+        if b is None:
+            if o != t:
+                notes.append(f"{f}: exists in both clone and shipped version with no common base, clone kept")
+            continue
+        text, n = merge3(o, b, t)
+        if n:
+            conflicts.append((f, text, n))
+        elif text != o:
+            result[f] = text
+    return result, conflicts, notes
+
+
+def merge_modjson(o, b, t):
+    ours = json.loads(o) if o else {}
+    base = json.loads(b) if b else {}
+    merged = json.loads(t) if t else {}
+    for k, v in ours.items():
+        if k == "cloned_from" or base.get(k) != v:
+            merged[k] = v
+    return (json.dumps(merged, ensure_ascii=False, indent=2) + "\n").encode()
+
+
+def mod_names(node, acc):
+    if isinstance(node, dict):
+        if isinstance(node.get("mod"), str):
+            acc.append(node["mod"])
+        for v in node.values():
+            mod_names(v, acc)
+    elif isinstance(node, list):
+        for v in node:
+            mod_names(v, acc)
+    return acc
+
+
+def swap_mods(node, mapping):
+    if isinstance(node, dict):
+        return {k: (mapping.get(v, v) if k == "mod" and isinstance(v, str) else swap_mods(v, mapping)) for k, v in node.items()}
+    if isinstance(node, list):
+        return [swap_mods(v, mapping) for v in node]
+    return node
+
+
+def plan_layout(clone, name, base_ver):
+    ours = json.loads((HOME / "layouts" / f"{clone}.json").read_text())
+    shipped = HOME / "layouts" / f"{name}.json"
+    if not shipped.exists():
+        return None, [f"shipped layout {name} no longer exists, clone left as is"]
+    b = fetch_base(base_ver, f"layouts/{name}.json")
+    if b is None:
+        return None, [f"no base for {name} v{base_ver} on GitHub"]
+    base = json.loads(b)
+    cf = ours.pop("cloned_from")
+    mapping = {}
+    for x, y in zip(mod_names(base, []), mod_names(ours, [])):
+        if x != y:
+            mapping[x] = y
+    if swap_mods(base, mapping) != ours:
+        return None, ["the layout clone has its own changes beyond mod names: update it by hand (compare base vs shipped layout, carry the changes over, set cloned_from.version)"]
+    new = swap_mods(json.loads(shipped.read_text()), mapping)
+    return {"cloned_from": cf, **new}, [f"mods: {', '.join(f'{k}->{v}' for k, v in mapping.items())}" if mapping else "no renames"]
+
+
+def status():
+    ver = app_version()
+    todo = False
+    print(f"Herdr {ver or '?'}")
+    for kind, clone, name, base in forks():
+        if ver is None:
+            state = "app version unknown"
+        elif vtuple(base) < vtuple(ver):
+            state, todo = f"behind: {base} -> {ver}, run herdr-forks update", True
+        elif vtuple(base) > vtuple(ver):
+            state, todo = f"newer than the app ({base} > {ver}): update Herdr on this machine", True
+        else:
+            state = "current"
+        print(f"  {kind} {clone} (from {name} {base}): {state}")
+    return 1 if todo else 0
+
+
+def check_mod(path):
+    try:
+        r = subprocess.run(["herdr-app", "check", str(path)], capture_output=True, text=True, timeout=20)
+        return r.returncode == 0, (r.stdout + r.stderr).strip()[-600:]
+    except subprocess.TimeoutExpired:
+        return None, "herdr-app check did not answer within 20s (it hangs in an agent sandbox): check it yourself"
+    except FileNotFoundError:
+        return None, "herdr-app not found"
+
+
+def update(names, dry):
+    ver = app_version()
+    if not ver:
+        print("Herdr version unknown: neither herdr-app --version nor update-notes.json answered")
+        return 2
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    rc = 0
+    for kind, clone, name, base in forks():
+        if names and clone not in names:
+            continue
+        if vtuple(base) >= vtuple(ver):
+            print(f"{clone}: current ({base})" if base == ver else f"{clone}: newer than the app ({base} > {ver}), skipped")
+            continue
+        print(f"{clone}: {base} -> {ver}")
+        try:
+            rc |= update_one(kind, clone, name, base, ver, dry, stamp)
+        except FetchErr as e:
+            print(f"  cannot download the base: {e}")
+            rc = 1
+    return rc
+
+
+def update_one(kind, clone, name, base, ver, dry, stamp):
+    rc = 0
+    if kind == "layout":
+        new, notes = plan_layout(clone, name, base)
+        for n in notes:
+            print(f"  {n}")
+        if new is None:
+            rc = 1
+            return rc
+        new["cloned_from"] = {**new["cloned_from"], "version": ver}
+        if dry:
+            print("  (-n) layout would be rebuilt from the shipped one")
+            return rc
+        path = HOME / "layouts" / f"{clone}.json"
+        bk = CACHE / "backup" / stamp / "layouts"
+        bk.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, bk / path.name)
+        path.write_text(json.dumps(new, ensure_ascii=False, indent=2) + "\n")
+        print(f"  updated, backup: {bk / path.name}")
+        return rc
+    result, conflicts, notes = plan_mod(clone, name, base)
+    for n in notes:
+        print(f"  {n}")
+    if conflicts:
+        rc = 1
+        cdir = CACHE / "conflicts" / stamp / clone
+        for f, text, n in conflicts:
+            (cdir / f).parent.mkdir(parents=True, exist_ok=True)
+            (cdir / f).write_bytes(text)
+            if n is None:
+                print(f"  CONFLICT {f}: binary file changed on both sides, shipped version saved: {cdir / f}")
+            else:
+                print(f"  CONFLICT {f}: {n} places, merge with markers: {cdir / f}")
+        print("  clone untouched")
+        return rc
+    mj = json.loads(result.get("mod.json", (HOME / "mods" / clone / "mod.json").read_bytes()))
+    mj["cloned_from"] = {**mj["cloned_from"], "version": ver}
+    result["mod.json"] = (json.dumps(mj, ensure_ascii=False, indent=2) + "\n").encode()
+    for f, data in sorted(result.items()):
+        print(f"  {'delete' if data is None else 'write'} {f}")
+    if dry:
+        return rc
+    cdir = HOME / "mods" / clone
+    bk = CACHE / "backup" / stamp / "mods" / clone
+    shutil.copytree(cdir, bk, ignore=shutil.ignore_patterns("*.d.ts"))
+    # main.js last: Herdr reloads the mod on save, its assets should already be there.
+    for f, data in sorted(result.items(), key=lambda kv: kv[0] == "main.js"):
+        p = cdir / f
+        if data is None:
+            p.unlink(missing_ok=True)
+        else:
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_bytes(data)
+    ok, out = check_mod(cdir)
+    if ok is False:
+        shutil.rmtree(cdir)
+        shutil.copytree(bk, cdir)
+        print(f"  herdr-app check failed, clone restored from backup:\n{out}")
+        rc = 1
+    else:
+        print(f"  {'checked' if ok else out}; backup: {bk}")
+    return rc
+
+
+def udiff(a, b, label_a, label_b):
+    return "".join(difflib.unified_diff(a.splitlines(True), b.splitlines(True), label_a, label_b))
+
+
+def diff_clone(clone):
+    """Print what is custom in a clone: shipped base (at its own cloned_from.version) vs the clone."""
+    match = [f for f in forks() if f[1] == clone]
+    if not match:
+        print(f"{clone}: no such clone (see: herdr-forks status)", file=sys.stderr)
+        return 1
+    kind, clone, name, base = match[0]
+    try:
+        if kind == "layout":
+            b = fetch_base(base, f"layouts/{name}.json")
+            if b is None:
+                print(f"no base for {name} v{base} on GitHub", file=sys.stderr)
+                return 1
+            ours = json.loads((HOME / "layouts" / f"{clone}.json").read_text())
+            ours.pop("cloned_from", None)
+            base_json = json.loads(b)
+            mapping = {x: y for x, y in zip(mod_names(base_json, []), mod_names(ours, [])) if x != y}
+            base_json = swap_mods(base_json, mapping)
+            out = udiff(json.dumps(base_json, ensure_ascii=False, indent=2) + "\n",
+                        json.dumps(ours, ensure_ascii=False, indent=2) + "\n",
+                        f"base/{name} v{base}", f"clone/{clone}")
+            print(out or f"{clone}: identical to base {name} v{base} (up to mod names)")
+            return 0
+        cdir, sdir = HOME / "mods" / clone, HOME / "mods" / name
+        names = {p.relative_to(d).as_posix() for d in (cdir, sdir) if d.is_dir() for p in d.rglob("*") if p.is_file()}
+        files = sorted(f for f in names if f not in SKIP and not f.endswith(".d.ts") and not f.startswith("."))
+        same = 0
+        for f in files:
+            raw = fetch_base(base, f"mods/{name}/{f}")
+            b, bin_b = rename_bytes(raw, name, clone)
+            o = (cdir / f).read_bytes() if (cdir / f).exists() else None
+            if b is None and o is None:
+                continue  # exists only in the newer shipped version
+            if b == o:
+                same += 1
+                continue
+            try:
+                if b is not None and o is not None:
+                    print(udiff(b.decode(), o.decode(), f"base/{name} v{base}/{f}", f"clone/{clone}/{f}"), end="")
+                elif o is None:
+                    print(f"--- {f}: deleted in the clone")
+                else:
+                    print(f"--- {f}: new file in the clone")
+                    print(udiff("", o.decode(), "/dev/null", f"clone/{clone}/{f}"), end="")
+            except UnicodeDecodeError:
+                print(f"--- {f}: binary differs")
+        print(f"({same} file(s) identical to base {name} v{base})")
+    except FetchErr as e:
+        print(f"cannot download the base: {e}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def main(argv):
+    if not argv or argv[0] in ("-h", "--help"):
+        print(__doc__)
+        return 0
+    if argv[0] == "status":
+        return status()
+    if argv[0] == "update":
+        rest = argv[1:]
+        dry = "-n" in rest or "--dry-run" in rest
+        return update([a for a in rest if not a.startswith("-")], dry)
+    if argv[0] == "diff" and len(argv) == 2:
+        return diff_clone(argv[1])
+    print(__doc__)
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
