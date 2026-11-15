@@ -11,32 +11,8 @@ grep -E '^## (Hard Stop Rules|Definition of Done|Команды проверки
 echo "agent_specific: $(grep -ciE 'Claude Code|Codex only|Cursor only|/skill-creator' "$FILE" 2>/dev/null || true)"
 echo "skill_deps: $(grep -ciE 'сначала (вызови|запусти|используй).*(skill|/skill-)' "$FILE" 2>/dev/null || true)"
 # Phrases skills.sh security audits flag: privilege escalation, bypassing user review, installing third-party skills.
-echo "audit_tells: $(grep -ciE 'full permission|elevated permission|\bsudo\b|no approval|(do not|don.t) (wait|stop) for (approval|ok)|without (asking|approval)|npx skills add [a-z0-9_.-]+/|вне песочницы|полными правами|не жди (подтверждения|«?ок)' "$FILE" 2>/dev/null || true)"
+echo "audit_tells: $(grep -ciE 'full permission|elevated permission|\bsudo\b|no approval|(do not|don.t) (wait|stop) for (approval|ok)|without (asking|approval)|npx skills add [a-z0-9_.-]+/|outside the sandbox|dangerouslyDisableSandbox|вне песочницы|полными правами|не жди (подтверждения|«?ок)' "$FILE" 2>/dev/null || true)"
 echo "has_example_section: $(grep -cE '^## Пример|^## Example|^## Examples' "$FILE" 2>/dev/null || true)"
 echo "has_preconditions: $(grep -cE '^## Preconditions|^## Предусловия' "$FILE" 2>/dev/null || true)"
-python3 - "$FILE" <<'PY'
-import os, re, sys
-path = sys.argv[1]
-text = open(path, encoding="utf-8").read()
-root = os.path.dirname(os.path.abspath(path))
-cited = set(re.findall(r"(?<![A-Za-z0-9_./-])(?:references|scripts|phases)/[A-Za-z0-9_./-]+\.[A-Za-z0-9]+", text))
-missing = [rel for rel in sorted(cited) if not os.path.isfile(os.path.join(root, rel))]
-print("missing_deps:", ", ".join(missing) if missing else "none")
-m = re.match(r"^---\n(.*?)\n---", text, re.S)
-if not m:
-    print("colon_in_description: N/A")
-    print("description_chars: N/A")
-    sys.exit()
-desc = re.search(r"^description:[ \t]*(?:[>|][-+]?[ \t]*\n((?:[ \t].*\n?)+)|(.+))", m.group(1), re.M)
-if not desc:
-    print("colon_in_description: N/A")
-    print("description_chars: N/A")
-else:
-    raw = desc.group(1) if desc.group(1) is not None else desc.group(2)
-    folded = " ".join(line.strip() for line in raw.splitlines() if line.strip()).strip("'\"")
-    body = folded.replace("http://", "").replace("https://", "")
-    print("colon_in_description:", "yes" if ":" in body else "no")
-    n = len(folded)
-    level = "critical" if n > 1024 else "major" if n > 400 else "ok"
-    print(f"description_chars: {n} ({level}; limit 400, hard 1024)")
-PY
+# Python in its own file: a here-doc needs a temp file, which agent sandboxes often refuse.
+python3 "$(dirname "$0")/lint_metrics.py" "$FILE"
