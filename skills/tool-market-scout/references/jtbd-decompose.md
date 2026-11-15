@@ -2,7 +2,7 @@
 
 ## Product decompose (если назван бренд)
 
-1. Прочитай official docs / features / pricing — не обзоры-списки.
+1. Прочитай official docs / features / pricing / changelog — не обзоры-списки. Если задача – надстройка над этим продуктом, сначала проверь его штатные возможности (меню, команды, плагины, API): покрытие 70%+ – скажи об этом до внешнего поиска.
 2. Раздели capabilities на **jobs**, не фичи:
 
 | Маркетинг («AI-polished output») | Job |
@@ -30,7 +30,9 @@
 | «Transcription app» | «Real-time dictation into any text field» + optional «batch file transcription» как отдельный job |
 | Один job на всё | 3–7 atomic jobs, каждый → свои query families |
 
-## Пример Wispr Flow
+## Иллюстрация: замена Wispr Flow
+
+Пример разбора одного продукта. Для другой задачи – те же шаги, свои jobs.
 
 **Jobs (functional):**
 - J1 — голос → текст в любом приложении (hotkey, background)
@@ -44,7 +46,13 @@
 - Meeting notes / speaker diarization
 - Team admin / SSO
 
-## Checkpoint template
+## Small pick – brief в одну строку
+
+```text
+Brief: <capability> · <platform> · <constraints> · out of scope: <...>
+```
+
+## Checkpoint template (stake)
 
 ```markdown
 ## JTBD Brief — {topic}

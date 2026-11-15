@@ -35,9 +35,9 @@ Evidence sources: pricing page, ToS/privacy, export/API docs, refund/trial terms
 
 Всегда добавь строку **Build (custom)**:
 
-- Estimate: Whisper/local STT + overlay script / Keyboard Maestro / custom app
+- Estimate: что именно строим (скрипт, обвязка вокруг OSS-ядра, небольшое приложение) и сколько это займёт
 - Build cost score по таблице
-- Когда Build выигрывает: strict privacy, niche workflow, все paid fail must jobs
+- Когда Build выигрывает: strict privacy, niche workflow, все кандидаты проваливают must jobs
 
 ## Verdict thresholds
 

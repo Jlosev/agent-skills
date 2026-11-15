@@ -1,5 +1,7 @@
 # Output Template
 
+Use only when the project has no format of its own for tool notes and the user asked for a file. A project registry or comparison template (named in its `AGENTS.md`) wins.
+
 ```markdown
 ---
 created: YYYY-MM-DD
@@ -7,13 +9,13 @@ updated: YYYY-MM-DD
 tags: [tool-research]
 ---
 
-# Tool Scout – {topic}
+# {job in a few words}
 
-## JTBD Brief
+## Brief
 ...
 
 ## Candidates
-| # | Name | Type | OSS/Paid | Covers jobs | URL |
+| # | Name | Type | License / price | Covers jobs | URL |
 ...
 
 ## Scoring
@@ -21,7 +23,7 @@ tags: [tool-research]
 ...
 
 ## Verdict
-- **Recommendation:** Buy | Build | Hybrid | Defer
+- **Recommendation:** Buy | Build | Hybrid | Pilot | Defer
 - **Top pick:** ...
 - **Next step:** ...
 
@@ -29,4 +31,4 @@ tags: [tool-research]
 - [Name](url) – accessed YYYY-MM-DD
 ```
 
-Сохранять в путь, который назвал пользователь (дефолт `Research/Tooling/{topic-slug}.md`). Slug – kebab-case от job statement, не от brand.
+File name – kebab-case from the job statement, not from a brand. Path – the one the user names.
