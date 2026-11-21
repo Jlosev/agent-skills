@@ -2,13 +2,13 @@
 name: bad-description-fixture
 description: >
   Orchestrates end-to-end skill development workflow including community research phase
-  via avito ai skills search CLI and skills-hub MCP fallback with automatic retry on VPN
+  via a fictional catalog CLI and a fallback connector with automatic retry on network
   failures, then generates SKILL.md from internal template references, runs prompt-engineer
   lint pass, delegates eval creation to skill-creator subagent with Task tool, optimizes
   description through iterative benchmark loops, validates evals.json minimum three cases,
-  publishes via avito-skill-publisher create-pr.sh or update-pr.sh with YACC-compliant
-  commit messages and Avito email enforcement, handles PR review triage through
-  paas_bitbucket_get_pr_comments without auto-posting to Mattermost or Confluence.
+  publishes via example-skill-publisher with a branch naming policy and a reviewer
+  checklist, then sorts review comments from a test repository without sending
+  messages to any external service.
 metadata:
   scope: public
   author: fixture
