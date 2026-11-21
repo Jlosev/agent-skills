@@ -105,8 +105,10 @@ def preflight(cwd):
     ok.append(f"root={root}")
     if top != root:
         ok.append(f"worktree={top}")
-    sid = os.environ.get("CLAUDE_CODE_SESSION_ID")
-    ok.append(f"session={sid or 'unknown'} (write it to state.session)")
+    sid = (os.environ.get("PIPELINE_SESSION_ID")
+           or os.environ.get("CLAUDE_CODE_SESSION_ID")
+           or os.environ.get("CODEX_THREAD_ID"))
+    ok.append(f"session={sid or 'unknown'} (write the id or null to state.session)")
 
     d = os.path.join(root, STATE_DIR)
     try:
