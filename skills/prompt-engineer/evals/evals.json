@@ -59,13 +59,13 @@
     {
       "id": 3,
       "name": "should-not-trigger-publish",
-      "prompt": "Опубликуй скилл `dummy-echo-helper` из `.tmp/dummy-skill-for-publish/` в Stash sandbox. Нужен push в PR, не lint.",
-      "expected_output": "Skill should NOT run prompt-engineer; redirect to avito-skill-publisher.",
+      "prompt": "Опубликуй скилл `dummy-echo-helper` из `.tmp/dummy-skill-for-publish/` в тестовый репозиторий Example Org. Нужен push в PR, не lint.",
+      "expected_output": "Skill should NOT run prompt-engineer; redirect to example-skill-publisher.",
       "files": [],
       "expectations": [
         "Не запускает Prompt Engineer lint pipeline",
         "Не выдаёт отчёт Critical/Major/Minor как основной deliverable",
-        "Рекомендует avito-skill-publisher или объясняет scope mismatch",
+        "Рекомендует example-skill-publisher или объясняет scope mismatch",
         "Не анализирует SKILL.md по quality-guide как главную задачу"
       ]
     },
@@ -79,7 +79,7 @@
         "Не выдаёт Prompt Engineer отчёт с оценкой A–D",
         "Не запускает lint quality-guide для существующего файла",
         "Рекомендует skill-scaffold для создания нового скилла",
-        "Не предлагает avito-skill-publisher как следующий шаг без запроса publish"
+        "Не предлагает example-skill-publisher как следующий шаг без запроса publish"
       ]
     },
     {
