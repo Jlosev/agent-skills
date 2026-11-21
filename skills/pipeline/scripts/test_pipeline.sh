@@ -17,7 +17,7 @@ json.dump(d, open(p, "w"))
 EOF
 }
 export GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@t GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@t
-unset CLAUDE_CODE_SESSION_ID
+unset PIPELINE_SESSION_ID CODEX_THREAD_ID CLAUDE_CODE_SESSION_ID
 
 # --- repo fixture
 R="$T/repo"; mkdir -p "$R/src/sub" "$R/tests" "$R/docs"
@@ -39,6 +39,12 @@ check "preflight in repo → 0" $([ $rc -eq 0 ]; echo $?)
 check "preflight creates self-ignored .pipeline" $([ -f "$R/.pipeline/.gitignore" ] && [ -z "$(git -C "$R" status --porcelain)" ]; echo $?)
 check "preflight lists make ci" $(echo "$out" | grep -q 'verify_candidate=make ci'; echo $?)
 check "preflight reports session id" $(echo "$out" | grep -q 'session=s1'; echo $?)
+out=$(cd "$R" && CODEX_THREAD_ID=codex1 $PY preflight)
+check "preflight recognizes Codex" $(echo "$out" | grep -q 'session=codex1'; echo $?)
+out=$(cd "$R" && PIPELINE_SESSION_ID=custom CODEX_THREAD_ID=codex1 CLAUDE_CODE_SESSION_ID=s1 $PY preflight)
+check "explicit harness session wins" $(echo "$out" | grep -q 'session=custom'; echo $?)
+out=$(cd "$R" && $PY preflight)
+check "preflight can run without a session" $(echo "$out" | grep -q 'session=unknown'; echo $?)
 check "preflight reports remote=none" $(echo "$out" | grep -q 'remote=none'; echo $?)
 check "preflight guesses base without origin/HEAD" $(echo "$out" | grep -q 'base=main (guessed'; echo $?)
 git -C "$R" worktree add -q "$R/.pipeline/worktrees/x" -b feat/x

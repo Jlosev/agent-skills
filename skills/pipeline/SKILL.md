@@ -21,7 +21,7 @@ user-invocable: true
 
 **Hard gate:** до закрытия review не пиши продуктовый код, не scaffold, не коммить реализацию. Исключение – throwaway spike, явно помеченный.
 
-**Прогон целиком.** Один вызов = все фазы до `done`. Закрыл артефакт – сразу следующая фаза. Не спрашивай «продолжать?», не подменяй работу промежуточным отчётом. Пауза только по §Остановки. Хук `Stop` (`references/hooks.md`) не даёт закончить ход посреди прогона.
+**Прогон целиком.** Один вызов = все фазы до `done`. Закрыл артефакт – сразу следующая фаза. Не спрашивай «продолжать?», не подменяй работу промежуточным отчётом. Пауза только по §Остановки. Подключённый хук `Stop` возвращает ход активному прогону (см. `references/hooks.md`). Без хука при обрыве возобнови прогон с фазы, сохранённой в state.
 
 `TOOLS = python3 -I ~/.agents/skills/pipeline/scripts/pipeline.py` (рядом с этим SKILL.md).
 
@@ -31,7 +31,7 @@ user-invocable: true
 
 `{main workspace}/.pipeline/state.json`. Каталог создаёт `TOOLS preflight` с `.pipeline/.gitignore` = `*`: в git не попадает, `.git/info/exclude` не трогай. Из worktree прогона state всё равно пишется в главный checkout (preflight печатает путь). Старый `.cursor/pipeline/` (preflight печатает `legacy_state=`) – прогон 1.0, возможно живой: без слова пользователя не трогай, новая задача – свой worktree и state. Перенос по просьбе – целиком, по §«Где лежат файлы прогона».
 
-`session` = `session=` из preflight (`$CLAUDE_CODE_SESSION_ID`); на resume в новом чате перезапиши. По нему хук `Stop` узнаёт сессию прогона.
+`session` = ID из `session=` preflight. При `unknown` запиши JSON `null`. При resume в новом чате повтори preflight и обнови `session` до продолжения фазы. Для интеграции любого харнесса передай его ID в `PIPELINE_SESSION_ID`. Без этой переменной preflight берёт ID Claude Code или Codex.
 
 Пиши **после каждой фазы, ruling и вмешательства пользователя**. State – источник истины; после компакта, обрыва или в новом чате читай его, а не память чата.
 
@@ -126,7 +126,7 @@ gstack `/spec` / `/office-hours` – только если просит `AGENTS.
 | **Technical** | `plan-eng-review` | CEO, design, DX, autoplan |
 | **Feature** | `autoplan` | не подменяй «только eng», если это фича |
 
-Скилл ищи по порядку: инструмент Skill (`autoplan`, `plan-eng-review`); `~/.claude/skills/gstack/<name>/SKILL.md`; `~/.cursor/skills/gstack-<name>/SKILL.md`. Codex нет → Claude-only, тег `[codex-unavailable]`.
+Возьми скилл из каталога навыков текущего харнесса или используй путь из `AGENTS.md`. gstack может публиковать его как `<name>` или `gstack-<name>` (в Codex, например, `~/.codex/skills/gstack-<name>/SKILL.md`). Для независимого прохода используй настроенного и разрешённого ревьюера. Если независимый ревьюер недоступен, проведи основной проход и отметь это в `rulings`. Если недоступен сам обязательный скилл ревью, запиши причину в `blocked`.
 
 Review просит правки плана → правь план, не код; обнови `scope`. Замечания закрыты → `phase: execute` и дальше. Итог review – одна строка в `rulings`.
 
@@ -141,6 +141,8 @@ Review просит правки плана → правь план, не код
 До первой правки – `verify.cmd` в worktree → `verify.baseline`: что падает уже на `base`. В главном checkout проверки не гоняй.
 
 **Default:** `subagent-driven-development` (`~/.agents/skills/subagent-driven-development/SKILL.md`). Независимые задачи плана (разные файлы, нет зависимости) – параллельно через `dispatching-parallel-agents`. Иное (`executing-plans`; прямой TDD для S или 1–2 механических шагов) – можно, причину в rulings.
+
+Выбирай исполнителя из доступных агентов текущего харнесса по сложности задачи. Внешнего исполнителя подключай по настройке проекта или явному поручению пользователя. Если делегирование недоступно, исполни план сам и запиши причину в `rulings`.
 
 **Вызов `/pipeline` – явная просьба пользователя коммитить в ветке прогона.** О коммитах не спрашивай. Push, PR, merge – по §Финиш.
 
