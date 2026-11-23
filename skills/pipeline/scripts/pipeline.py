@@ -4,7 +4,7 @@
   pipeline.py preflight                    check workspace, create .pipeline/, list verify candidates
   pipeline.py diff-guard [BASE] [--expect-sha SHA]
                                            out-of-scope files, weakened checks, diff fingerprint
-  pipeline.py hook                         Claude Code Stop / StopFailure hook (JSON on stdin)
+  pipeline.py hook                         Stop hook (JSON on stdin)
 
 Exit codes: 0 ok, 1 findings (diff-guard), 3 blocked.
 """
@@ -325,24 +325,12 @@ def owns_run(st, ev):
     return transcript_runs_pipeline(ev.get("transcript_path"))
 
 
-def notify(title, text, level="warn"):
-    cmd = os.environ.get("PIPELINE_NOTIFY_CMD") or shutil.which("lan-notify")
-    if not cmd:
-        return
-    try:
-        subprocess.run([cmd, "-s", "agent-pipeline", "-l", level, "-t", title, text],
-                       capture_output=True, timeout=15)
-    except (OSError, subprocess.TimeoutExpired):
-        pass
-
-
 def hook(raw):
     try:
         ev = json.loads(raw or "{}")
     except ValueError:
         return 0
-    name = ev.get("hook_event_name")
-    if name not in ("Stop", "StopFailure"):
+    if ev.get("hook_event_name") != "Stop":
         return 0
     cwd = ev.get("cwd") or os.getcwd()
     st, path, root = find_state(cwd)
@@ -353,11 +341,6 @@ def hook(raw):
     task = SLUG.sub("-", str(st.get("task", "run")))[:60] or "run"
     phase = SLUG.sub("-", str(st.get("phase")))[:20]
 
-    if name == "StopFailure":
-        notify(f"/pipeline {task}: обрыв",
-               f"Ход упал на ошибке API ({SLUG.sub('-', str(ev.get('error', 'unknown')))}), фаза {phase}. "
-               f"Напиши в сессии «продолжай» — прогон продолжит по state.")
-        return 0
     if ev.get("background_tasks") or phase == "clarify":
         return 0  # waiting for background work / brainstorming dialogue with the user
 
@@ -382,8 +365,6 @@ def hook(raw):
     except OSError:
         pass
     if g["noprog"] > NO_PROGRESS_BLOCKS or g["in_phase"] > BLOCKS_PER_PHASE:
-        notify(f"/pipeline {task}: стоит",
-               f"Агент остановился на фазе {phase} без blocked. Загляни в сессию.")
         return 0
     print(json.dumps({
         "decision": "block",

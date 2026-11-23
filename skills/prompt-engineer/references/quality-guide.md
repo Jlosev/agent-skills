@@ -1,6 +1,6 @@
 ---
 created: 2026-09-03
-updated: 2026-11-15
+updated: 2026-11-24
 ---
 
 # System Prompt Quality Guide
@@ -163,6 +163,17 @@ Weights below are a local heuristic for the lint report.
 - [ ] trigger + ordered steps + success criteria; idempotent
 
 ---
+
+## Runtime integration checklist
+
+Apply when rules rely on a launcher, injected context, hooks, permissions, or another workflow. Inspect definitions and configurations as data. Use static inspection and locally available tests or traces. Run live actions only within the authorization provided for their effects.
+
+1. **Find the effective inputs.** For each supported launch mode, locate the generated system and developer instructions, user and project rules, injected fields, and hooks involved. Mark unavailable sources as unverified and distinguish active from optional integrations.
+2. **Trace a decision.** Use the same input across all relevant rules. Record the intended action, the action under effective precedence, and the fallback. Check missing, unknown, stale and conflicting signals. Include the producer's observation time when it differs from snapshot publication time.
+3. **Trace side effects.** Check whether hooks or alternate entry points do the same action. Verify they respect the same permission, data scope and deduplication requirements. For a rule depending on a service, verify the configured transport or state that delivery is unverified.
+4. **Report runtime coverage.** Mark each path as consistent, conflicting, or unverified. Cite the trigger, the consumer, and the competing instruction or effect where applicable. A higher-priority override or a hook that skips a required check is at least major even when file metrics pass.
+
+Example: a rule routes ordinary questions to a secondary channel when the user is away, but the default launcher always instructs the agent to ask in chat. Report the conflict with both source lines. Check any error hook for independent delivery and include a case where the injected signal is stale.
 
 ## Workflow Enforcement Patterns
 

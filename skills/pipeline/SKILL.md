@@ -1,21 +1,25 @@
 ---
 name: pipeline
-description: Classic implementation pipeline – preflight, brainstorm/spec if unclear, writing-plans, eng review (technical) or autoplan (feature), SDD, then a deterministic verify gate and rebase before finish. Runs phases back-to-back, decides instead of asking, keeps state on disk, resumes after a crash. Use when the user types /pipeline or the project's AGENTS.md routes an implementation task through /pipeline; not for one-line fixes or questions.
+description: Use when the user invokes /pipeline, project instructions route implementation through /pipeline, or an existing run needs resuming. Intended for multi-stage work with planning, review, and verification. Skip for one-line fixes and questions.
 icon: rocket
 color: blue
 metadata:
   scope: public
   author: Jlosev
-  version: "1.1.0"
+  version: "1.1.1"
   tags: "pipeline,orchestrator,sdlc"
 created: 2026-09-15
-updated: 2026-11-08
+updated: 2026-11-24
 user-invocable: true
 ---
 
 # /pipeline – запуск реализации
 
 Оркестратор. Скиллы **читай с диска и выполняй**, тела не копируй. `AGENTS.md` workspace побеждает дефолты этого скилла (§Переопределение проектом).
+
+## Scope
+
+Многошаговая реализация по `/pipeline` и возобновление её сохранённого прогона. Внутри прогона сохраняй стадии, результаты проверок и условия остановки.
 
 **Announce:** `Using /pipeline – preflight → classify → plan → review → execute → verify → finish.`
 
@@ -24,6 +28,10 @@ user-invocable: true
 **Прогон целиком.** Один вызов = все фазы до `done`. Закрыл артефакт – сразу следующая фаза. Не спрашивай «продолжать?», не подменяй работу промежуточным отчётом. Пауза только по §Остановки. Подключённый хук `Stop` возвращает ход активному прогону (см. `references/hooks.md`). Без хука при обрыве возобнови прогон с фазы, сохранённой в state.
 
 `TOOLS = python3 -I ~/.agents/skills/pipeline/scripts/pipeline.py` (рядом с этим SKILL.md).
+
+## Preconditions
+
+Запускай из рабочей копии Git. На этапе preflight проверь корень, доступность команд и внешние зависимости, необходимые для задачи. Для возобновления найди состояние прогона и проверь указанный в нём worktree.
 
 ---
 
@@ -47,7 +55,6 @@ user-invocable: true
   "scope": ["src/widgets/**", "tests/widgets/**"],
   "verify": { "cmd": "make ci", "runtime": "how or null", "gates": {}, "diff_sha": "", "at": "" },
   "blocked": null,
-  "notify": { "progress_id": null, "ask_id": null },
   "rulings": ["что решил – почему – чем рискуем"],
   "interventions": [{ "at": "", "kind": "question|nudge|correction|access|scope|gate|other", "said": "≤100 симв.", "prevent": "что в скилле убрало бы это" }],
   "updated": "YYYY-MM-DDTHH:MMZ (UTC: date -u +%Y-%m-%dT%H:%MZ)"
@@ -70,7 +77,16 @@ user-invocable: true
 
 ---
 
-## 0. Preflight и контекст
+## Algorithm
+
+### Старт
+
+1. Прочитай state. Нет файла → preflight и новая задача; есть и `phase != done` → resume, одной строкой: задача, фаза, артефакт.
+2. `blocked` заполнен и пользователь дал недостающее → очисти `blocked`, продолжай с той же фазы.
+3. Прочитай `SKILL.md` текущей фазы и выполни её **до артефакта**.
+4. Обнови state → следующая фаза без паузы. Повторяй до `phase: done` или остановки.
+
+### 0. Preflight и контекст
 
 1. **Прочитай state.** Есть, `phase != done` → resume с этой фазы (§Старт).
 2. `TOOLS preflight`. `BLOCKED` → одна строка пользователю с готовым исправлением из вывода, `blocked` в state, стоп. Прогон из чужого каталога (vault, `~`) – это `BLOCKED`, не обходи.
@@ -95,7 +111,7 @@ user-invocable: true
 
 ---
 
-## 1. Clarify (только Unclear)
+### 1. Clarify (только Unclear)
 
 Прочитай и следуй `brainstorming` (`~/.agents/skills/brainstorming/SKILL.md`). Диалог с пользователем здесь законен: хук в фазе `clarify` не держит ход.
 
@@ -107,7 +123,7 @@ gstack `/spec` / `/office-hours` – только если просит `AGENTS.
 
 ---
 
-## 2. Plan
+### 2. Plan
 
 Прочитай и следуй `writing-plans` (`~/.agents/skills/writing-plans/SKILL.md`). План на диск; путь из `AGENTS.md` побеждает `docs/superpowers/plans/`.
 
@@ -117,7 +133,7 @@ gstack `/spec` / `/office-hours` – только если просит `AGENTS.
 
 ---
 
-## 3. Review (кроме S и hotfix)
+### 3. Review (кроме S и hotfix)
 
 Один и тот же plan file. Не пиши второй `## GSTACK REVIEW REPORT` – заменяй секцию.
 
@@ -132,7 +148,7 @@ Review просит правки плана → правь план, не код
 
 ---
 
-## 4. Execute
+### 4. Execute
 
 Изоляция: `using-git-worktrees` (`~/.agents/skills/using-git-worktrees/SKILL.md`). Путь – из `AGENTS.md`, иначе `.pipeline/worktrees/<branch>`: каталог уже в игноре, `.gitignore` и `.git/info/exclude` не трогай. Cloud уже изолирован. `branch`, `worktree` → state.
 
@@ -152,7 +168,7 @@ Review просит правки плана → правь план, не код
 
 ---
 
-## 5. Verify (обязательна, включая S)
+### 5. Verify (обязательна, включая S)
 
 Готовность доказывают команды, а не отчёт исполнителя. Порядок и форма записи – `references/verify.md`. Коротко:
 
@@ -165,13 +181,18 @@ Review просит правки плана → правь план, не код
 
 ---
 
-## 6. Финиш
+### 6. Финиш
 
 1. `git fetch` и rebase на `base`. Ветка уже запушена (`upstream` есть) или `AGENTS.md` велит merge – merge `base` в ветку: force push не нужен. Конфликт решай сам; не решается без угадывания → `blocked`.
 2. После обновления снова `verify.cmd` и `TOOLS diff-guard`, новый `verify.diff_sha`. Перед PR `TOOLS diff-guard --expect-sha <verify.diff_sha>` = 0: код после проверки не менялся.
 3. `finishing-a-development-branch` (`~/.agents/skills/finishing-a-development-branch/SKILL.md`). Push и PR – как разрешает `AGENTS.md` или пользователь; иначе ветка готова локально и это сказано в отчёте.
 4. `verification-before-completion` – свежий вывод команд.
 5. **Отчёт** (до 10 строк): что сделано, PR/ветка, гейты со статусами, всё `not_run` отдельной строкой, rulings с риском, вмешательства пользователя этого прогона. → `phase: done`.
+
+## Definition of Done
+
+- Артефакт соответствует запросу. Проверки и ревью выполнены на итоговом diff, статусы и отпечаток сохранены в state.
+- Итоговый отчёт содержит фактический результат и ограничения проверки. `phase: done` выставлена после финиша.
 
 ---
 
@@ -212,12 +233,11 @@ Review просит правки плана → правь план, не код
 
 1. `blocked` в state: что нужно и что будет при каждом ответе.
 2. Вопрос пользователю: что решить, последствия вариантов, твоя рекомендация. Без голого «да?».
-3. Есть канал уведомлений пользователя – вопрос туда с вариантами, ожидание ответа фоновой командой (`references/notify.md`). Ответ в чате тоже принимается.
-4. Не сворачивай прогон «на всякий случай»: независимую работу, которой ответ не нужен, продолжай.
+3. Продолжай независимую работу, которой ответ не нужен. Когда ответ получен, зафиксируй решение и продолжи текущую фазу.
 
 ### Прогресс
 
-Вызов `/pipeline` – просьба пользователя уведомлять о прогоне, если его правила допускают канал. Есть канал уведомлений – одна живая карточка прогресса на прогон, обновление на смене фазы; итог и остановки – отдельной карточкой со звуком (`references/notify.md`). Нет канала – молча работай, сводка в отчёте.
+После записи перехода в state сообщи текущую фазу и проверяемый результат предыдущей. При остановке укажи фазу и решение, которого ждёт прогон. В итог подставь результат проверки и фактический статус завершения. Для представления прогресса используй правила текущей сессии.
 
 ---
 
@@ -234,13 +254,12 @@ Review просит правки плана → правь план, не код
 | push, PR, ready, merge | только с разрешения пользователя |
 | маршрут задачи (чат, внешний runner) | этот скилл в чате |
 | worktrees | `.pipeline/worktrees/<branch>` |
-| уведомления | по глобальным правилам пользователя |
 
 Запреты проекта сильнее разрешений этого скилла. Противоречие проекта с этим скиллом – ruling в пользу проекта.
 
 ---
 
-## Запреты
+## Hard Stop Rules
 
 - Сразу кодить, потому что «и так ясно»
 - Спрашивать «продолжать?»; резать прогон на один шаг за ход
@@ -255,9 +274,16 @@ Review просит правки плана → правь план, не код
 
 ---
 
-## Старт
+## Example
 
-1. Прочитай state. Нет файла → preflight и новая задача; есть и `phase != done` → resume, одной строкой: задача, фаза, артефакт.
-2. `blocked` заполнен и пользователь дал недостающее → очисти `blocked`, продолжай с той же фазы.
-3. Прочитай `SKILL.md` текущей фазы и выполни её **до артефакта**.
-4. Обнови state → следующая фаза без паузы. Повторяй до `phase: done` или остановки.
+Вход – `/pipeline` для исправления локального теста в одном модуле. После preflight агент определяет размер S, фиксирует план и scope в state, выполняет правку и проверку, записывает результаты и завершает прогон.
+
+## Check commands
+
+- `bash scripts/test_pipeline.sh` из каталога скилла проверяет preflight, diff-guard и хук.
+- `TOOLS diff-guard --expect-sha <verify.diff_sha>` перед публикацией проверяет совпадение с проверенным diff.
+
+## Gotchas
+
+- На resume проверь артефакт сохранённой фазы и фактический worktree.
+- Перед остановкой зафиксируй `blocked`, чтобы хук `Stop` мог отпустить ход.
