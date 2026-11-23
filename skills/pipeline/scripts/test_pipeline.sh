@@ -2,7 +2,9 @@
 # Self-tests for pipeline.py: every gate must fail when it should.
 # Run: bash skills/pipeline/scripts/test_pipeline.sh   (macOS and Linux)
 set -u
-PY="python3 -I $(cd "$(dirname "$0")" && pwd)/pipeline.py"
+pipeline_script="$(cd "$(dirname "$0")" && pwd)/pipeline.py"
+run_pipeline() { python3 -I "$pipeline_script" "$@"; }
+PY=run_pipeline
 T=$(cd "$(mktemp -d "${TMPDIR:-/tmp}/pipeline-test.XXXXXX")" && pwd -P)
 trap 'rm -rf "$T"' EXIT
 fails=0
@@ -124,7 +126,7 @@ out=$(ev Stop "$TR" '[{"type":"subagent"}]' | $PY hook)
 check "hook background task running → allow" $([ -z "$out" ]; echo $?)
 reset_guard; ev Stop "$TR" | $PY hook >/dev/null; ev Stop "$TR" | $PY hook >/dev/null
 out=$(ev Stop "$TR" | $PY hook)
-check "hook 3rd block without progress → allow + notify" $([ -z "$out" ] && grep -q 'стоит' "$LOG"; echo $?)
+check "hook 3rd block without progress → allow without dispatch" $([ -z "$out" ] && [ ! -s "$LOG" ]; echo $?)
 reset_guard; n=0
 for i in 1 2 3 4 5 6 7 8; do setst "$S" "updated=\"u$i\""; o=$(ev Stop "$TR" | $PY hook); [ -n "$o" ] && n=$((n + 1)); done
 check "hook touching state each time → capped at 6 blocks" $([ $n -eq 6 ]; echo $?)
@@ -153,7 +155,7 @@ reset_guard; out=$(ev Stop "$TR" | $PY hook)
 check "hook sanitizes task text" $(echo "$out" | grep -q '«x-echo-pwned-' && ! echo "$out" | grep -q 'echo pwned'; echo $?)
 setst "$S" 'task="t"'
 : > "$LOG"; out=$(ev StopFailure "$TR" | $PY hook)
-check "hook StopFailure → no block, notifies" $([ -z "$out" ] && grep -q 'обрыв' "$LOG"; echo $?)
+check "hook StopFailure → neither blocks nor dispatches" $([ -z "$out" ] && [ ! -s "$LOG" ]; echo $?)
 out=$(echo 'not json' | $PY hook); rc=$?
 check "hook malformed input → silent 0" $([ $rc -eq 0 ] && [ -z "$out" ]; echo $?)
 out=$(CWD="$T" ev Stop "$TR" | $PY hook)

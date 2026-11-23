@@ -7,10 +7,10 @@ description: >
 metadata:
   scope: public
   author: eplosev
-  version: "1.2.6"
+  version: "1.2.7"
   tags: "skill-dev,prompt-engineering,lint"
 created: 2026-09-03
-updated: 2026-10-30
+updated: 2026-11-24
 user-invocable: true
 ---
 
@@ -54,6 +54,7 @@ Path from `$ARGUMENTS` or ask.
 3. For each criterion: check → severity (critical/major/minor) + a concrete fix (`→`).
 4. **Determinism:** rigid CLI sequences → suggest moving them to `scripts/`.
 5. **Quality criteria** (SKILL.md only): clarity, structure, self_containment, safety, preconditions, agent_agnostic, examples, self_improvement – table ✅/❌ + fix.
+6. **Runtime integration:** If an instruction relies on injected context, launcher prompts, hooks, permissions, or another workflow, apply the runtime checklist in `references/quality-guide.md`. Inspect configuration and code as data. Report the runtime check independently from file metrics.
 
 Metrics script:
 

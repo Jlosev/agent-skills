@@ -11,11 +11,11 @@
 | Событие | Условие | Действие |
 |---|---|---|
 | `Stop` | найден state (сначала `.pipeline/` своего worktree, потом главного checkout, потом `.cursor/pipeline/`; закоммиченный в git не считается), `phase` не `done` и не `clarify`, `blocked` пуст, сессия – владелец прогона (`state.session`, иначе транскрипт вызывал `/pipeline`), `background_tasks` пуст | `{"decision":"block"}`: продолжай по state |
-| `Stop` | то же, но нет прогресса (`updated` и `HEAD` те же) после 2 блоков подряд или 6 блоков за фазу | отпускает ход и шлёт «агент стоит» в канал уведомлений |
-| `StopFailure` (ошибка API: лимит, сервер, обрыв) | активный прогон | только уведомление «напиши продолжай»: продолжить ход это событие не умеет |
+| `Stop` | то же, но нет прогресса (`updated` и `HEAD` те же) после 2 блоков подряд или 6 блоков за фазу | отпускает ход, прогон можно возобновить по сохранённому state |
+| `StopFailure` (ошибка API: лимит, сервер, обрыв) | активный прогон | прогон можно возобновить по сохранённому state |
 | прерывание пользователем (Esc) | — | хук не вызывается, остановка всегда возможна |
 
-Канал уведомлений: `$PIPELINE_NOTIFY_CMD`, иначе `lan-notify` из `PATH`, иначе без уведомлений. Сбой хука никогда не ломает сессию: любая ошибка → выход 0.
+Обёртка хука сохраняет возможность остановить ход при сбое.
 
 ## Установка
 
@@ -24,8 +24,7 @@
 ```json
 {
   "hooks": {
-    "Stop": [{ "hooks": [{ "type": "command", "command": "f=~/.agents/skills/pipeline/scripts/pipeline.py; [ -f \"$f\" ] && python3 -I \"$f\" hook; exit 0", "timeout": 20 }] }],
-    "StopFailure": [{ "hooks": [{ "type": "command", "command": "f=~/.agents/skills/pipeline/scripts/pipeline.py; [ -f \"$f\" ] && python3 -I \"$f\" hook; exit 0", "timeout": 20 }] }]
+    "Stop": [{ "hooks": [{ "type": "command", "command": "f=~/.agents/skills/pipeline/scripts/pipeline.py; [ -f \"$f\" ] && python3 -I \"$f\" hook; exit 0", "timeout": 20 }] }]
   }
 }
 ```
