@@ -9,10 +9,10 @@ description: >
 metadata:
   scope: public
   author: Jlosev
-  version: "1.8.1"
+  version: "1.9.0"
   tags: "human-doc,readability,dedup,slop"
 created: 2026-07-28
-updated: 2026-11-15
+updated: 2026-11-25
 user-invocable: true
 argument-hint: "[path]"
 allowed-tools: Read, Edit, Write, Bash
@@ -151,6 +151,8 @@ Before the report, find and fix:
 - a sentence that holds by rhythm and has no fact
 - a verb that needs a human subject, with no human there
 - a human verb on a system («обещает», «не видит») where a machine verb or a plain fact would do
+
+When the document asks the reader for a decision, make the requested decision explicit in the recommendation. Put the evidence and any known limit that can change the choice next to it, or link directly to the section that gives them.
 
 ### 8. Surfaces
 
